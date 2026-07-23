@@ -1,0 +1,1 @@
+File project/TASKS.md created. Epics modules tasks subtasks dependencies priorities acceptance criteria estimates status pending. Await approval.

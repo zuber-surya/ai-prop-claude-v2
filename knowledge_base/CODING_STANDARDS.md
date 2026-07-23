@@ -6,65 +6,81 @@ The repository follows a conventional full-stack separation with clear boundarie
 
 ```
 ai-prop-claude-v2/
+├── .claude/
+├── .clinerules
+├── .cursor
+├── .github/
+│   └── workflows/
+├── .opencode/
+├── .windsurf/
+├── AGENTS.md
+├── CLAUDE.md
 ├── knowledge_base/
-│   ├── api/
-│   │   └── API_SPECIFICATION.md
-│   ├── architecture/
-│   │   └── SOLUTION_ARCHITECTURE.md
-│   ├── database/
-│   │   └── DATABASE_DESIGN.md
-│   ├── development/
-│   │   └ CODING_STANDARDS.md   (this file)
-│   ├── docs/
-│   │   ├── 00_AI_CHARTER.md
-│   │   ├── 01_PROJECT_PLAN.md
-│   │   ├── 02_PROJECT_OVERVIEW.md
-│   │   └── REVIEW_SUMMARY.md
-│   ├── requirements/
-│   │   ├── BRD.md
-│   │   ├── NFR.md
-│   │   └── PRD.md
-│   ├── documents/
-│   │   ├── API_CONTRACT.md
-│   │   ├── GITHUB_WORKFLOW.md
-│   │   ├── NFR.md
-│   │   ├── PRD.md
-│   │   ├── ROADMAP.md
-│   │   ├── SCHEMA.md
-│   │   ├── TESTING_STRATEGY_AND_DOD.md
-│   │   ├── UI_REFERENCE.md
-│   │   └── design_reference/
-│   │       ├── propvista_crm/
-│   │       │   └── DESIGN.md
-│   │       └── design-details.md
-│   ├── src/
-│   │   ├── client/
-│   │   │   ├── components/
-│   │   │   ├── pages/
-│   │   │   ├── public/
-│   │   │   └── styles/
-│   │   ├── server/
-│   │   │   ├── controllers/
-│   │   │   ├── middleware/
-│   │   │   ├── routes/
-│   │   │   ├── services/
-│   │   │   └── utils/
-│   │   └── prisma/
-│   │       ├── migrations/
-│   │       └── schema.prisma
-│   └── .github/
-│       └── workflows/
+│   ├── 00_AI_CHARTER.md
+│   ├── 01_PROJECT_PLAN.md
+│   ├── 02_PROJECT_OVERVIEW.md
+│   ├── API_SPECIFICATION.md
+│   ├── BRD.md
+│   ├── CODING_STANDARDS.md   (this file)
+│   ├── DATABASE_DESIGN.md
+│   ├── NFR.md
+│   ├── PRD.md
+│   ├── README.md
+│   ├── REVIEW_SUMMARY.md
+│   ├── SOLUTION_ARCHITECTURE.md
+│   └── TASKS.md
+├── raw_documents/
+│   ├── API_CONTRACT.md
+│   ├── GITHUB_WORKFLOW.md
+│   ├── NFR.md
+│   ├── PRD.md
+│   ├── REPORTING.md
+│   ├── ROADMAP.md
+│   ├── SCHEMA.md
+│   ├── TESTING_STRATEGY_AND_DOD.md
+│   ├── UI_REFERENCE.md
+│   └── design_reference/
+│       ├── design-details.md
+│       ├── design-references-catalog.md
+│       ├── admin_agent_command_center/
+│       ├── ai_chatbot_configuration/
+│       ├── bulk_upload_validation_results/
+│       ├── customer_account_dashboard/
+│       ├── lead_detail_sarah_jenkins/
+│       ├── lead_pipeline_kanban_view/
+│       ├── listing_editor_basic_info/
+│       ├── propvista_crm/
+│       │   └── DESIGN.md
+│       ├── propvista_crm_homepage/
+│       ├── search_results_empty_state/
+│       ├── search_results_filter_fallback_view/
+│       ├── search_results_standard_view/
+│       └── property_inventory_admin_view/
+│       └── property_details_premium_view/
+├── src/                     # Source code (to be created during implementation)
+│   ├── client/              # Frontend (Next.js/React)
+│   │   ├── components/
+│   │   ├── pages/
+│   │   ├── public/
+│   │   └── styles/
+│   ├── server/              # Backend (Node.js/Express)
+│   │   ├── controllers/
+│   │   ├── middleware/
+│   │   ├── routes/
+│   │   ├── services/
+│   │   └── utils/
+│   └── prisma/              # Prisma schema and migrations
+│       ├── migrations/
+│       └── schema.prisma
 ├── .env.example             # Example environment variables (committed)
 ├── .gitignore
-├── package.json
 └── README.md
 ```
 
 **Notes:**
-- The `src/` directory will hold the actual application code once implementation begins (Phases 1-5).
-- The `documents/` directory contains the source documents that should not be edited directly; changes to specifications should be made in the source and then reflected in the living documents in `docs/` and `requirements/` via the documentation update process.
-- The `api/` directory contains derived API specifications for easy reference.
-- The `architecture/`, `database/`, `development/`, and `requirements/` directories contain generated design documents.
+- The `knowledge_base/` directory contains living artifacts (AI_CHARTER.md, PROJECT_PLAN.md, etc.) and derived specifications (API_SPECIFICATION.md, DATABASE_DESIGN.md, SOLUTION_ARCHITECTURE.md, CODING_STANDARDS.md).
+- The `raw_documents/` directory contains source‑of‑truth documents (API_CONTRACT.md, GITHUB_WORKFLOW.md, NFR.md, PRD.md, ROADMAP.md, SCHEMA.md, TESTING_STRATEGY_AND_DOD.md, UI_REFERENCE.md) and the `design_reference/` folder with UI mockups.
+- The `src/` directory will hold the application source code once implementation begins (Phases 1‑5).
 
 ### Naming Conventions
 #### Files and Directories
