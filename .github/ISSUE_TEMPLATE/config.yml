@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: GitHub Discussions
+    url: https://github.com/username/ai-prop-claude-v2/discussions
+    about: Ask questions and share ideas
+  - name: Documentation
+    url: https://github.com/username/ai-prop-claude-v2/blob/main/knowledge_base/README.md
+    about: Browse project documentation

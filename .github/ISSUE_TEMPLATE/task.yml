@@ -1,0 +1,70 @@
+name: Task
+description: Create a new task for sprint planning
+title: "[TASK]: "
+labels: ["task"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for creating a task!
+  - type: input
+    id: task-id
+    attributes:
+      label: Task ID
+      description: The task identifier (e.g., T001, T002)
+      placeholder: T001
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: Priority level of the task
+      options:
+        - Low
+        - Medium
+        - High
+        - Critical
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Task Description
+      description: Detailed description of the task to be performed
+      placeholder: Describe what needs to be done
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Define when this task will be considered complete
+      placeholder: List the criteria that must be met for this task to be done
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: List any task IDs that this task depends on (e.g., T001, T005)
+      placeholder: T001, T005 (leave blank if no dependencies)
+    validations:
+      required: false
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional Notes
+      description: Any additional information or context
+      placeholder: Additional notes or context
+    validations:
+      required: false
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/username/ai-prop-claude-v2/blob/main/CODE_OF_CONDUCT.md)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
