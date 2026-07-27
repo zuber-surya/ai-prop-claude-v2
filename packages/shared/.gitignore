@@ -1,0 +1,41 @@
+# Node.js dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# Logging and debugging
+debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Build outputs
+/dist
+/build
+/lib
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.staging
+.env.proto
+.env*
+!.env.example
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts

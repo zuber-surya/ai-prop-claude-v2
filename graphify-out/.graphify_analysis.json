@@ -1,0 +1,449 @@
+{
+  "communities": {
+    "0": [
+      "eslint_config_prettier",
+      "eslint_plugin_prettier",
+      "packages_backend_package_devdependencies",
+      "packages_backend_package_devdependencies_eslint",
+      "packages_backend_package_devdependencies_eslint_config_prettier",
+      "packages_backend_package_devdependencies_eslint_plugin_prettier",
+      "packages_backend_package_devdependencies_prettier",
+      "packages_backend_package_devdependencies_prisma",
+      "packages_backend_package_devdependencies_ts_node_dev",
+      "packages_backend_package_devdependencies_types_bcryptjs",
+      "packages_backend_package_devdependencies_types_compression",
+      "packages_backend_package_devdependencies_types_cookie_parser",
+      "packages_backend_package_devdependencies_types_cors",
+      "packages_backend_package_devdependencies_types_express",
+      "packages_backend_package_devdependencies_types_helmet",
+      "packages_backend_package_devdependencies_types_jsonwebtoken",
+      "packages_backend_package_devdependencies_types_node",
+      "packages_backend_package_devdependencies_typescript",
+      "packages_backend_package_devdependencies_typescript_eslint_eslint_plugin",
+      "packages_backend_package_devdependencies_typescript_eslint_parser",
+      "packages_backend_package_json_eslint",
+      "packages_backend_package_json_prisma",
+      "packages_backend_package_json_types_node",
+      "packages_backend_package_json_typescript",
+      "prettier",
+      "ts_node_dev",
+      "types_bcryptjs",
+      "types_compression",
+      "types_cookie_parser",
+      "types_cors",
+      "types_express",
+      "types_helmet",
+      "types_jsonwebtoken",
+      "typescript_eslint_eslint_plugin",
+      "typescript_eslint_parser"
+    ],
+    "1": [
+      "bcryptjs",
+      "compression",
+      "cookie_parser",
+      "cors",
+      "express",
+      "helmet",
+      "jsonwebtoken",
+      "packages_backend_package_dependencies",
+      "packages_backend_package_dependencies_bcryptjs",
+      "packages_backend_package_dependencies_compression",
+      "packages_backend_package_dependencies_cookie_parser",
+      "packages_backend_package_dependencies_cors",
+      "packages_backend_package_dependencies_express",
+      "packages_backend_package_dependencies_helmet",
+      "packages_backend_package_dependencies_jsonwebtoken",
+      "packages_backend_package_dependencies_pino",
+      "packages_backend_package_dependencies_pino_http",
+      "packages_backend_package_dependencies_prisma_client",
+      "packages_backend_package_dependencies_zod",
+      "pino",
+      "pino_http",
+      "prisma_client",
+      "zod"
+    ],
+    "2": [
+      "packages_backend_eslintrc",
+      "packages_backend_eslintrc_env",
+      "packages_backend_eslintrc_env_es2022",
+      "packages_backend_eslintrc_env_node",
+      "packages_backend_eslintrc_extends",
+      "packages_backend_eslintrc_parser",
+      "packages_backend_eslintrc_parseroptions",
+      "packages_backend_eslintrc_parseroptions_ecmaversion",
+      "packages_backend_eslintrc_parseroptions_project",
+      "packages_backend_eslintrc_parseroptions_sourcetype",
+      "packages_backend_eslintrc_plugins",
+      "packages_backend_eslintrc_root",
+      "packages_backend_eslintrc_rules",
+      "packages_backend_eslintrc_rules_prettier_prettier",
+      "ref_eslint_recommended",
+      "ref_plugin_prettier_recommended",
+      "ref_plugin_typescript_eslint_recommended",
+      "ref_plugin_typescript_eslint_recommended_requiring_type_checking",
+      "ref_prettier",
+      "ref_tsconfig_json",
+      "ref_typescript_eslint"
+    ],
+    "3": [
+      "dotenv",
+      "package",
+      "package_devdependencies",
+      "package_devdependencies_dotenv",
+      "package_devdependencies_prisma",
+      "package_devdependencies_typescript",
+      "package_json_prisma",
+      "package_json_typescript",
+      "package_name",
+      "package_private",
+      "package_scripts",
+      "package_scripts_build",
+      "package_scripts_dev",
+      "package_scripts_lint",
+      "package_scripts_start",
+      "package_scripts_test",
+      "package_version",
+      "package_workspaces",
+      "ref_packages"
+    ],
+    "4": [
+      "packages_backend_src_app",
+      "packages_backend_src_app_app",
+      "packages_backend_src_controllers_auth_controller_authcontroller",
+      "packages_backend_src_controllers_healthcontroller",
+      "packages_backend_src_controllers_healthcontroller_gethealth",
+      "packages_backend_src_index",
+      "packages_backend_src_middleware_asynchandler",
+      "packages_backend_src_middleware_asynchandler_asynchandler",
+      "packages_backend_src_middleware_errorhandler",
+      "packages_backend_src_middleware_errorhandler_customerror",
+      "packages_backend_src_middleware_errorhandler_errorhandler",
+      "packages_backend_src_routes_auth",
+      "packages_backend_src_routes_auth_router",
+      "packages_backend_src_routes_index",
+      "packages_backend_src_routes_index_router",
+      "packages_backend_src_server",
+      "packages_backend_src_server_server",
+      "packages_backend_src_utils_logger",
+      "packages_backend_src_utils_logger_logger"
+    ],
+    "5": [
+      "packages_frontend_tsconfig_compileroptions",
+      "packages_frontend_tsconfig_compileroptions_allowjs",
+      "packages_frontend_tsconfig_compileroptions_esmoduleinterop",
+      "packages_frontend_tsconfig_compileroptions_incremental",
+      "packages_frontend_tsconfig_compileroptions_isolatedmodules",
+      "packages_frontend_tsconfig_compileroptions_jsx",
+      "packages_frontend_tsconfig_compileroptions_lib",
+      "packages_frontend_tsconfig_compileroptions_module",
+      "packages_frontend_tsconfig_compileroptions_moduleresolution",
+      "packages_frontend_tsconfig_compileroptions_noemit",
+      "packages_frontend_tsconfig_compileroptions_paths",
+      "packages_frontend_tsconfig_compileroptions_plugins",
+      "packages_frontend_tsconfig_compileroptions_resolvejsonmodule",
+      "packages_frontend_tsconfig_compileroptions_skiplibcheck",
+      "packages_frontend_tsconfig_compileroptions_strict",
+      "packages_frontend_tsconfig_compileroptions_target",
+      "ref_dom",
+      "ref_dom_iterable",
+      "ref_esnext"
+    ],
+    "6": [
+      "eslint_config_next",
+      "packages_frontend_package_devdependencies",
+      "packages_frontend_package_devdependencies_eslint",
+      "packages_frontend_package_devdependencies_eslint_config_next",
+      "packages_frontend_package_devdependencies_tailwindcss",
+      "packages_frontend_package_devdependencies_tailwindcss_postcss",
+      "packages_frontend_package_devdependencies_types_node",
+      "packages_frontend_package_devdependencies_types_react",
+      "packages_frontend_package_devdependencies_types_react_dom",
+      "packages_frontend_package_devdependencies_typescript",
+      "packages_frontend_package_json_eslint",
+      "packages_frontend_package_json_types_node",
+      "packages_frontend_package_json_typescript",
+      "tailwindcss",
+      "tailwindcss_postcss",
+      "types_react",
+      "types_react_dom"
+    ],
+    "7": [
+      "next",
+      "packages_frontend_package",
+      "packages_frontend_package_dependencies",
+      "packages_frontend_package_dependencies_next",
+      "packages_frontend_package_dependencies_react",
+      "packages_frontend_package_dependencies_react_dom",
+      "packages_frontend_package_name",
+      "packages_frontend_package_private",
+      "packages_frontend_package_scripts",
+      "packages_frontend_package_scripts_build",
+      "packages_frontend_package_scripts_dev",
+      "packages_frontend_package_scripts_lint",
+      "packages_frontend_package_scripts_start",
+      "packages_frontend_package_version",
+      "react",
+      "react_dom"
+    ],
+    "8": [
+      "packages_shared_package",
+      "packages_shared_package_author",
+      "packages_shared_package_description",
+      "packages_shared_package_devdependencies",
+      "packages_shared_package_devdependencies_types_node",
+      "packages_shared_package_devdependencies_typescript",
+      "packages_shared_package_json_types_node",
+      "packages_shared_package_json_typescript",
+      "packages_shared_package_keywords",
+      "packages_shared_package_license",
+      "packages_shared_package_main",
+      "packages_shared_package_name",
+      "packages_shared_package_scripts",
+      "packages_shared_package_scripts_test",
+      "packages_shared_package_type",
+      "packages_shared_package_version"
+    ],
+    "9": [
+      "packages_backend_package",
+      "packages_backend_package_author",
+      "packages_backend_package_description",
+      "packages_backend_package_keywords",
+      "packages_backend_package_license",
+      "packages_backend_package_main",
+      "packages_backend_package_name",
+      "packages_backend_package_scripts",
+      "packages_backend_package_scripts_build",
+      "packages_backend_package_scripts_dev",
+      "packages_backend_package_scripts_lint",
+      "packages_backend_package_scripts_start",
+      "packages_backend_package_scripts_test",
+      "packages_backend_package_type",
+      "packages_backend_package_version"
+    ],
+    "10": [
+      "packages_frontend_src_app_layout",
+      "packages_frontend_src_app_layout_geistmono",
+      "packages_frontend_src_app_layout_geistsans",
+      "packages_frontend_src_app_layout_metadata",
+      "packages_frontend_src_app_layout_rootlayout",
+      "packages_frontend_src_components_atoms_button",
+      "packages_frontend_src_components_atoms_button_button",
+      "packages_frontend_src_components_atoms_button_types",
+      "packages_frontend_src_components_atoms_button_types_buttonprops",
+      "packages_frontend_src_components_molecules_buttongroup",
+      "packages_frontend_src_components_molecules_buttongroup_buttongroup",
+      "packages_frontend_src_components_organisms_header",
+      "packages_frontend_src_components_organisms_header_header"
+    ],
+    "11": [
+      "packages_backend_tsconfig",
+      "packages_backend_tsconfig_compileroptions",
+      "packages_backend_tsconfig_compileroptions_esmoduleinterop",
+      "packages_backend_tsconfig_compileroptions_forceconsistentcasinginfilenames",
+      "packages_backend_tsconfig_compileroptions_lib",
+      "packages_backend_tsconfig_compileroptions_module",
+      "packages_backend_tsconfig_compileroptions_outdir",
+      "packages_backend_tsconfig_compileroptions_rootdir",
+      "packages_backend_tsconfig_compileroptions_skiplibcheck",
+      "packages_backend_tsconfig_compileroptions_strict",
+      "packages_backend_tsconfig_compileroptions_target",
+      "ref_es2022"
+    ],
+    "12": [
+      "packages_backend_src_controllers_auth_controller",
+      "packages_backend_src_controllers_auth_controller_authservice",
+      "packages_backend_src_lib_auth",
+      "packages_backend_src_lib_auth_cookieoptions",
+      "packages_backend_src_services_auth_service",
+      "packages_backend_src_services_auth_service_authservice",
+      "packages_backend_src_services_auth_service_authservice_register",
+      "packages_backend_src_utils_prisma",
+      "packages_backend_src_validator_auth_schema",
+      "packages_backend_src_validator_auth_schema_registerdto",
+      "packages_backend_src_validator_auth_schema_registerschema"
+    ],
+    "13": [
+      "packages_frontend_tsconfig",
+      "packages_frontend_tsconfig_exclude",
+      "packages_frontend_tsconfig_include",
+      "ref_mts",
+      "ref_next_dev_types_ts",
+      "ref_next_env_d_ts",
+      "ref_next_types_ts",
+      "ref_node_modules",
+      "ref_ts",
+      "ref_tsx"
+    ],
+    "14": [
+      "create_milestones",
+      "create_milestones_extract_sections_from_markdown",
+      "create_milestones_get_existing_milestones",
+      "create_milestones_main",
+      "create_milestones_make_request",
+      "create_milestones_rationale_16",
+      "create_milestones_rationale_42",
+      "create_milestones_rationale_70"
+    ],
+    "15": [
+      "parse_features2",
+      "parse_features2_escape_md",
+      "parse_features2_parse_features"
+    ],
+    "16": [
+      "prisma_seed",
+      "prisma_seed_main",
+      "prisma_seed_prisma"
+    ],
+    "17": [
+      "packages_frontend_eslint_config",
+      "packages_frontend_eslint_config_eslintconfig"
+    ],
+    "18": [
+      "packages_frontend_next_config",
+      "packages_frontend_next_config_nextconfig"
+    ],
+    "19": [
+      "packages_frontend_postcss_config",
+      "packages_frontend_postcss_config_config"
+    ],
+    "20": [
+      "packages_frontend_src_app_page",
+      "packages_frontend_src_app_page_home"
+    ],
+    "21": [
+      "parse_features",
+      "parse_features_parse_features"
+    ],
+    "22": [
+      "test_config",
+      "test_config_config"
+    ],
+    "23": [
+      "check_env"
+    ],
+    "24": [
+      "packages_backend_src_lib_prisma"
+    ],
+    "25": [
+      "prisma_config"
+    ]
+  },
+  "cohesion": {
+    "0": 0.05714285714285714,
+    "1": 0.08695652173913043,
+    "2": 0.09523809523809523,
+    "3": 0.10526315789473684,
+    "4": 0.19298245614035087,
+    "5": 0.10526315789473684,
+    "6": 0.11764705882352941,
+    "7": 0.125,
+    "8": 0.125,
+    "9": 0.13333333333333333,
+    "10": 0.21794871794871795,
+    "11": 0.16666666666666666,
+    "12": 0.2727272727272727,
+    "13": 0.2,
+    "14": 0.39285714285714285,
+    "15": 0.6666666666666666,
+    "16": 0.6666666666666666,
+    "17": 1.0,
+    "18": 1.0,
+    "19": 1.0,
+    "20": 1.0,
+    "21": 1.0,
+    "22": 1.0,
+    "23": 1.0,
+    "24": 1.0,
+    "25": 1.0
+  },
+  "gods": [
+    {
+      "id": "packages_frontend_tsconfig_compileroptions",
+      "label": "compilerOptions",
+      "degree": 16
+    },
+    {
+      "id": "packages_backend_tsconfig_compileroptions",
+      "label": "compilerOptions",
+      "degree": 10
+    },
+    {
+      "id": "packages_frontend_tsconfig_include",
+      "label": "include",
+      "degree": 7
+    },
+    {
+      "id": "package_scripts",
+      "label": "scripts",
+      "degree": 6
+    },
+    {
+      "id": "packages_backend_package_scripts",
+      "label": "scripts",
+      "degree": 6
+    },
+    {
+      "id": "packages_backend_eslintrc_extends",
+      "label": "extends",
+      "degree": 5
+    },
+    {
+      "id": "packages_backend_src_utils_logger_logger",
+      "label": "logger",
+      "degree": 5
+    },
+    {
+      "id": "packages_frontend_package_scripts",
+      "label": "scripts",
+      "degree": 5
+    },
+    {
+      "id": "create_milestones_make_request",
+      "label": "make_request()",
+      "degree": 4
+    },
+    {
+      "id": "create_milestones_get_existing_milestones",
+      "label": "get_existing_milestones()",
+      "degree": 4
+    }
+  ],
+  "surprises": [],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `devDependencies` connect `devDependencies` to `package.json`?",
+      "why": "High betweenness centrality (0.049) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `dependencies` connect `dependencies` to `package.json`?",
+      "why": "High betweenness centrality (0.035) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `devDependencies` connect `devDependencies` to `package.json`?",
+      "why": "High betweenness centrality (0.010) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `name`, `version`, `private` to the rest of the system?",
+      "why": "141 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `devDependencies` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.05714285714285714 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `dependencies` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.08695652173913043 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `.eslintrc.json` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.09523809523809523 - nodes in this community are weakly interconnected."
+    }
+  ]
+}

@@ -1,0 +1,248 @@
+// Prisma Schema for Property Vista CRM MVP
+datasource db {
+  provider = "postgresql"
+  // URL will be provided via environment variable (process.env.DATABASE_URL)
+  // Prisma expects the datasource URL to be supplied via env var or config.
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Enums
+enum Role {
+  VISITOR
+  CUSTOMER
+  AGENT
+  ADMIN
+}
+
+enum BookingStatus {
+  REQUESTED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum PropertyType {
+  SINGLE_FAMILY
+  CONDO
+  TOWNHOUSE
+  // can extend later
+}
+
+enum AreaUnit {
+  SQFT
+  SQM
+}
+
+enum NotificationType {
+  LEAD_ASSIGNED
+  PROPERTY_INQUIRY
+  BOOKING_REQUEST
+  BOOKING_CONFIRMED
+  PAYMENT_SUCCESS
+  // add more as needed
+}
+
+// Models
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  passwordHash  String
+  name          String
+  role          Role     @default(VISITOR)
+  isVerified    Boolean  @default(false)
+  refreshTokenHash String?   // Hashed refresh token (for rotation)
+  resetToken    String?   // for password reset (hashed)
+  resetTokenExpiry DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  // Relations
+  propertiesAsAgent   Property[]   @relation("AgentProperties")
+  bookingsAsCustomer  Booking[]    @relation("BookingsAsCustomer")
+  bookingsAsAgent     Booking[]    @relation("BookingsAsAgent")
+  payments            Payment[]    @relation("PaymentsByUser")
+  notifications       Notification[] @relation("NotificationsForUser")
+  favorites           Favorite[]   @relation("UserFavorites")
+
+  @@index([email])
+  @@index([role])
+  @@index([deletedAt])
+}
+
+model Property {
+  id            String   @id @default(uuid())
+  title         String
+  description   String
+  price         Decimal  @db.Decimal(12, 2)
+  beds          Int
+  baths         Decimal  @db.Decimal(3,1)
+  area          Decimal  @db.Decimal(10,2)
+  areaUnit      AreaUnit
+  propertyType  PropertyType
+  yearBuilt     Int?
+  street        String
+  city          String
+  state         String?
+  postalCode    String
+  country       String   @default("USA")
+  latitude      Float?
+  longitude     Float?
+  isPublished   Boolean  @default(false)
+  isPremium     Boolean  @default(false)
+  premiumUntil  DateTime?
+  agentId       String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  deletedAt     DateTime?
+
+  // Relations
+  agent         User     @relation("AgentProperties", fields:[agentId], references:[id])
+  media         PropertyMedia[]   @relation("PropertyMedia")
+  favorites     Favorite[]        @relation("PropertyFavorites")
+  bookings      Booking[]         @relation("PropertyBookings")
+
+  @@index([agentId])
+  @@index([isPublished])
+  @@index([city, state])
+  @@index([price])
+  @@index([createdAt])
+}
+
+model PropertyMedia {
+  id          String   @id @default(uuid())
+  propertyId  String
+  url         String
+  caption     String?
+  isPrimary   Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  deletedAt   DateTime?
+
+  // Relation
+  property    Property @relation("PropertyMedia", fields:[propertyId], references:[id])
+
+  @@index([propertyId])
+  @@index([isPrimary])
+  // Note: Partial unique index for primary image per property must be enforced via migration
+  // CREATE UNIQUE INDEX ON property_media(property_id) WHERE is_primary = true;
+}
+
+model Booking {
+  id          String   @id @default(uuid())
+  propertyId  String
+  agentId     String
+  customerId  String
+  startTime   DateTime
+  endTime     DateTime
+  status      BookingStatus @default(REQUESTED)
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  // Relations
+  property    Property @relation("PropertyBookings", fields:[propertyId], references:[id])
+  agent       User     @relation("BookingsAsAgent", fields:[agentId], references:[id])
+  customer    User     @relation("BookingsAsCustomer", fields:[customerId], references:[id])
+
+  @@index([propertyId])
+  @@index([agentId])
+  @@index([customerId])
+  @@index([status])
+  @@index([startTime])
+  // Composite index for overlap detection (agent + time range)
+  @@index([agentId, startTime, endTime])
+}
+
+model Payment {
+  id                  String   @id @default(uuid())
+  paymentIntentId     String   @unique
+  amount              Int      // amount in smallest currency unit (cents)
+  currency            String   @default("usd")
+  status              PaymentStatus @default(PENDING)
+  paymentMethodType   String?
+  metadataJson        Json?
+  receiptUrl          String?
+  failureCode         String?
+  failureMessage      String?
+  userId              String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  deletedAt           DateTime?
+
+  // Relation (optional)
+  user                User?    @relation("PaymentsByUser", fields:[userId], references:[id])
+
+  @@index([status])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Notification {
+  id                 String   @id @default(uuid())
+  recipientId        String
+  type               NotificationType
+  title              String
+  message            String
+  relatedEntityId    String?   // optional UUID of related entity
+  relatedEntityType  String?   // e.g., "Property", "Booking"
+  isRead             Boolean   @default(false)
+  createdAt          DateTime @default(now())
+  deletedAt          DateTime?
+
+  // Relation
+  recipient          User @relation("NotificationsForUser", fields:[recipientId], references:[id])
+
+  @@index([recipientId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@index([type])
+  @@index([recipientId, isRead])
+}
+
+model Favorite {
+  id          String   @id @default(uuid())
+  userId      String
+  propertyId  String
+  createdAt   DateTime @default(now())
+  deletedAt   DateTime?
+
+  // Relations
+  user        User     @relation("UserFavorites", fields:[userId], references:[id])
+  property    Property @relation("PropertyFavorites", fields:[propertyId], references:[id])
+
+  @@unique([userId, propertyId])
+  @@index([userId])
+  @@index([propertyId])
+}
+
+// Alternative approach for refresh tokens (separate table)
+// Uncomment if preferring separate table over refreshTokenHash in User model
+/*
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation("RefreshTokens", fields:[userId], references:[id])
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+*/

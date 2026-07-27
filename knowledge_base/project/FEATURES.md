@@ -1,0 +1,1820 @@
+# Project Features
+
+This document breaks down the Property Vista CRM MVP project into individual features derived from the implementation epics. Each feature represents a discrete unit of functionality that delivers specific user value and can be implemented, tested, and released independently.
+
+---
+
+## Epic 0: Foundation & Setup
+
+### Feature 0.1: Project Initialization & Structure
+- **Feature ID**: F001
+- **Description**: Set up monorepo structure with frontend, backend, and shared packages. Configure package.json, tsconfig, and project scaffolding.
+- **Business Value**: Establishes a maintainable codebase foundation enabling organized development and team collaboration.
+- **User Roles**: Developers, DevOps
+- **UI Screens**: None (infrastructure)
+- **APIs**: None (infrastructure setup)
+- **Database Tables**: None (initial setup)
+- **Validation Rules**: N/A
+- **Dependencies**: None
+- **Acceptance Criteria**:
+  - Monorepo structure created with frontend, backend, and shared directories
+  - Root package.json with workspaces configured
+  - TypeScript configuration established
+  - ESLint and Prettier configured
+  - Husky hooks initialized
+- **Definition of Done**:
+  - Project structure committed to repository
+  - Linting and formatting run successfully on empty project
+  Husky hooks initialized
+- **Definition of Done**:
+  - Project structure committed to repository
+  - Linting and formatting run successfully on empty project
+  - Development environment setup documented
+
+### Feature 0.2: Authentication System Core
+- **Feature ID**: F002
+- **Description**: Implement user registration, login, JWT-based authentication with access/refresh tokens, password hashing, and basic user management.
+- **Business Value**: Enables secure user access to the system, forming the basis for all user-specific functionality and data protection.
+- **User Roles**: Visitor, Customer, Agent, Admin
+- **UI Screens**: 
+  - Login page (`/login`)
+  - Registration page (`/register`)
+  - Forgot password (`/forgot-password`)
+  - Reset password (`/reset-password/:token`)
+  - Email verification (`/verify-email/:token`)
+- **APIs**:
+  - `POST /auth/register`
+  - `POST /auth/login`
+  - `POST /auth/refresh`
+  - `POST /auth/logout`
+  - `GET /auth/me` (protected)
+  - `POST /auth/forgot-password`
+  - `POST /auth/reset-password`
+  - `GET /auth/verify-email/:token`
+- **Database Tables**:
+  - `users` (id, email, password_hash, name, role, is_verified, refresh_token_hash, created_at, updated_at, deleted_at)
+- **Validation Rules**:
+  - Email format validation
+  - Password strength requirements (min 8 chars, uppercase, lowercase, number)
+  - Unique email constraint
+  - Name required (min 2 chars)
+  - Role validation (enum: visitor, customer, agent, admin)
+- **Dependencies**: 
+  - Feature 0.1 (Project initialization)
+- **Acceptance Criteria**:
+  - User can register with valid email/password
+  - Email verification sent and functional
+  - User can log in and receive access/refresh tokens
+  - Protected routes return 401 without token
+  - Refresh token rotation works
+  - Password reset flow operational
+  - All auth endpoints return appropriate error codes (400, 401, 422)
+- **Definition of Done**:
+  - Auth service implemented with unit tests (≥90% coverage)
+  - Auth controller implemented with integration tests
+  - All auth endpoints return correct status codes and responses
+  - JWT token generation and validation working
+  - Password hashing using bcrypt
+  - Email verification flow implemented
+  - Password reset flow implemented
+
+### Feature 0.3: Security & Middleware Infrastructure
+- **Feature ID**: F003
+- **Description**: Implement core middleware including error handling, logging, request validation, CORS, and security headers.
+- **Business Value**: Provides consistent error handling, security protections, and observability foundation for all API endpoints.
+- **User Roles**: All (system-level)
+- **UI Screens**: None
+- **APIs**: Applied to all endpoints
+- **Database Tables**: None
+- **Validation Rules**:
+  - Request body validation via Zod schemas
+  - Input sanitization
+  - Rate limiting configuration
+  - Security headers (Helmet.js equivalent)
+- **Dependencies**:
+  - Feature 0.1 (Project initialization)
+- **Acceptance Criteria**:
+  - Centralized error handling catches and formats all errors
+  - Request logging implemented for all endpoints
+  - Input validation rejects malformed requests with 400 status
+  - CORS configured appropriately for frontend origins
+  - Basic security headers implemented
+- **Definition of Done**:
+  - Error handling middleware implemented
+  - Request logging middleware implemented
+  - Validation middleware using Zod
+  - Security headers configured
+  - CORS properly configured
+  - Unit tests for middleware components
+
+### Feature 0.4: Database Foundation & Migrations
+- **Feature ID**: F004
+- **Description**: Set up PostgreSQL database connection, Prisma ORM, initial migration for users table, and database utilities.
+- **Business Value**: Establishes persistent data storage foundation for all application features.
+- **User Roles**: Developers, DevOps
+- **UI Screens**: None
+- **APIs**: None (infrastructure)
+- **Database Tables**:
+  - `users` table creation
+- **Validation Rules**:
+  - Database connection pooling configured
+  - Migration scripts versioned
+  - Prisma schema validated
+- **Dependencies**:
+  - Feature 0.1 (Project initialization)
+- **Acceptance Criteria**:
+  - PostgreSQL database connected successfully
+  - Prisma ORM configured and initialized
+  - Initial migration for users table created and applied
+  - Database connection pooling configured
+  - Prisma client accessible throughout application
+- **Definition of Done**:
+  - Database configuration files committed
+  - Initial Prisma schema created
+  - First migration generated and applied
+  - Database connection tested and working
+  - Prisma client singleton pattern implemented
+  - Database utilities module created
+
+### Feature 0.5: CI/CD Pipeline Foundation
+- **Feature ID**: F005
+- **Description**: Set up continuous integration pipeline with linting, unit testing, and basic deployment automation.
+- **Business Value**: Ensures code quality, prevents regressions, and enables reliable deployments.
+- **User Roles**: Developers, DevOps
+- **UI Screens**: None
+- **APIs**: None
+- **Database Tables**: None
+- **Validation Rules**:
+  - Pipeline triggers on PR and push to main
+  - Linting must pass before merge
+  - Unit tests must pass with minimum coverage
+- **Dependencies**:
+  - Feature 0.1 (Project initialization)
+  - Feature 0.2 (Authentication System Core)
+- **Acceptance Criteria**:
+  - CI pipeline runs on pull requests
+  - Linting stage executes and fails on errors
+  - Test stage runs unit tests and reports coverage
+  - Build status
+  - Pipeline blocks merge on test/lint failures
+- **Definition of Done**:
+  - CI configuration files committed (GitHub Actions or similar)
+  - Linting step configured and working
+  - Test step configured with coverage reporting
+  - Pipeline successfully runs on test commits
+  - Pipeline blocks merges on failing builds
+
+---
+
+## Epic 1: Core Property Catalog & Search
+
+### Feature 1.1: Property Data Model & API
+- **Feature ID**: F101
+- **Description**: Implement properties table, property media table, and complete CRUD API endpoints for property management.
+- **Business Value**: Forms the core data model for the real estate platform, enabling property storage, retrieval, and management.
+- **User Roles**: Visitor (read), Agent/Admin (write)
+- **UI Screens**: None (backend feature)
+- **APIs**:
+  - `GET /properties` – list with query params
+  - `GET /properties/:id` – single property detail
+  - `GET /properties/:id/media` – list media for property
+  - `POST /properties` – create property (multipart/form-data)
+  - `PATCH /properties/:id` – update property
+  - `PATCH /properties/:id` – soft delete
+  - `POST /properties/:id/publish` – toggle published flag
+- **Database Tables**:
+  - `properties` (id, title, description, price, beds, baths, area, area_unit, property_type, year_built, street, city, state, postal_code, country, latitude, longitude, is_published, is_premium, premium_until, agent_id, created_at, updated_at, deleted_at)
+  - `property_media` (id, property_id, url, caption, is_primary, sort_order, created_at, deleted_at)
+- **Validation Rules**:
+  - Price > 0
+  - Area > 0
+  - Beds ≥ 0 (integer)
+  - Baths ≥ 0 (integer, typically 0.5 increments)
+  - Year built between 1800 and current year
+  - Required fields: title, price, beds, baths, area, property_type, location fields
+  - Valid email for agent contact (if provided)
+  - Latitude between -90 and 90
+  - Longitude between -180 and 180
+- **Dependencies**:
+  - Feature 0.2 (Authentication System Core) - for protected routes
+  - Feature 0.4 (Database Foundation & Migrations)
+- **Acceptance Criteria**:
+  - Unauthenticated users can view published properties list and details
+  - Property creation requires authentication (agent/admin)
+  - Property updates require ownership or admin privileges
+  - Soft delete preserves data but hides from public listings
+  - Publish/unpublish toggles is_published flag
+  - All property endpoints return appropriate error codes (400, 401, 403, 404, 422)
+- **Definition of Done**:
+  - Property and property_media tables created via migration
+  - Property service implemented with business logic
+  - Property controller implemented with all CRUD endpoints
+  - Unit tests for property service (≥90% coverage)
+  - Integration tests for property endpoints
+  - API specification updated
+  - Database design documentation updated
+  - Validation rules implemented and tested
+
+### Feature 1.2: Property Listing & Filtering
+- **Feature ID**: F102
+- **Description**: Implement property list page with pagination, filtering (price, beds, baths, location), and sorting capabilities.
+- **Business Value**: Enables users to discover properties that match their criteria, forming the primary user journey for property search.
+- **User Roles**: Visitor, Customer, Agent, Admin
+- **UI Screens**:
+  - Homepage (`/`) - featured properties section
+  - Properties listing page (`/properties`) - filter sidebar, results grid
+  - Search results page (`/search` or `/results`)
+- **APIs**:
+  - `GET /properties` – list with query params (page, limit, priceMin, priceMax, beds, baths, city, state, propertyType, isPublished=true)
+- **Database Tables**: 
+  - `properties` (utilizes indexes)
+- **Validation Rules**:
+  - Page ≥ 1 (default 1)
+  - Limit between 1-100 (default 20)
+  - priceMin ≤ priceMax when both provided
+  - beds ≥ 0 when provided
+  - baths ≥ 0 when provided
+  - Valid propertyType values (enum)
+  - Valid city/state values (non-empty when provided)
+- **Dependencies**:
+  - Feature 1.1 (Property Data Model & API)
+- **Acceptance Criteria**:
+  - Unauthenticated users can view published properties list
+  - Filtering works correctly (combined range filters, text search)
+  - Pagination loads additional pages without duplication
+  - Empty state handled gracefully when no results
+  - Loading states displayed during data fetching
+- **Definition of Done**:
+  - Property list API endpoint implemented with filtering
+  - Frontend property list component with filter sidebar
+  - Responsive grid layout (desktop) and list layout (mobile)
+  - Pagination or infinite scroll implemented
+  - Filter component with price sliders, dropdowns, checkboxes
+  - Unit tests for filtering logic
+  - Integration tests for list endpoint with various filter combinations
+  - Performance: page loads < 2s on 3G simulated
+
+### Feature 1.3: Property Detail Page
+- **Feature ID**: F103
+- **Description**: Implement detailed property view with gallery, property information, agent contact, and inquiry call-to-action.
+- **Business Value**: Provides users with comprehensive property information to make informed decisions, increasing engagement and conversion potential.
+- **User Roles**: Visitor, Customer, Agent, Admin
+- **UI Screens**:
+  - Property detail page (`/properties/:id`)
+- **APIs**:
+  - `GET /properties/:id` – single property detail
+  - `GET /properties/:id/media` – list media for property
+- **Database Tables**:
+  - `properties`
+  - `property_media`
+- **Validation Rules**:
+  - Property ID valid UUID format
+  - Property exists and is published (or user is owner/admin)
+  - Media URLs valid format
+- **Dependencies**:
+  - Feature 1.1 (Property Data Model & API)
+- **Acceptance Criteria**:
+  - Property detail shows all required fields (title, price, beds, baths, area, description, location)
+  - Property media gallery displays all images with primary image first
+  - Agent contact information displayed (name, phone, email if available)
+  - Inquiry CTA button prominent and functional
+  - Unpublished properties show 404 to non-owners/admins
+- **Definition of Done**:
+  - Property detail page route and component implemented
+  - Property gallery/carousel component with zoom capability
+  - Property information displayed in organized sections
+  - Agent contact card with click-to-call/email functionality
+  - Inquiry modal integration (reuse from Feature 2.3)
+  - SEO meta tags dynamically set based on property data
+  - Responsive layout: detailed view on desktop, stacked on mobile
+  - Unit tests for property detail component
+  - Integration tests for detail endpoint
+
+### Feature 1.4: AI-Powered Natural Language Search
+- **Feature ID**: F104
+- **Description**: Implement natural language search bar with AI processing, fallback to filter-based search, and explainability features.
+- **Business Value**: Enhances user search experience by allowing conversational queries, reducing friction and improving search success rates.
+- **User Roles**: Visitor, Customer, Agent, Admin
+- **UI Screens**:
+  - Homepage hero search bar
+  - Properties listing page search bar
+  - Search results page (with AI badge/explanation)
+- **APIs**:
+  - Search endpoint: `GET /search?q=&source=ai|fallback&limit=&offset=` (returns properties with score/explanation if AI)
+  - Suggestion endpoint: `GET /search/suggest?q=`
+- **Database Tables**:
+  - `properties` (for fallback search)
+- **Validation Rules**:
+  - Query string length reasonable (min 3 chars, max 500 chars)
+  - Source parameter validation (ai or fallback)
+  - Pagination parameters validated
+- **Dependencies**:
+  - Feature 1.1 (Property Data Model & API)
+  - Feature 0.2 (Authentication System Core) - for rate limiting
+  - External AI API (Anthropic Claude)
+- **Acceptance Criteria**:
+  - AI search returns ranked results with explainability icons
+  - Fallback works when AI service unavailable
+  - Search suggestions provided based on query input
+  - Clear indication when AI search is being used vs fallback
+  - Error handling for AI service failures
+- **Definition of Done**:
+  - Search service implemented with AI integration and fallback logic
+  - Search controller with search and suggest endpoints
+  - Frontend search bar with debounce and AI placeholder text
+  - Search results display with property cards and explainability badges
+  - Loading states for AI processing
+  - Error UI when AI service unavailable (fallback notification)
+  - Unit tests for search service logic
+  - Integration tests for search endpoints
+  - Performance: search results returned within 2s (excluding actual AI latency)
+  - E2E test: search → filter → open detail → verify data
+
+### Feature 1.5: Property Media Management
+- **Feature ID**: F105
+- **Description**: Implement property image upload, gallery display, and media association with properties.
+- **Business Value**: Enables visual property presentation, which is critical for user engagement and decision-making in real estate.
+- **User Roles**: Agent/Admin (upload), Visitor (view)
+- **UI Screens**:
+  - Property detail page gallery
+  - Property media upload modal (admin/agent)
+  - Property creation/edit forms
+- **APIs**:
+  - `GET /properties/:id/media` – list media for property
+  - `POST /properties/:id/media` – upload media (multipart/form-data)
+  - `DELETE /properties/:id/media/:mediaId` – delete media
+  - `PATCH /properties/:id/media/:mediaId` – update media (caption, primary flag)
+- **Database Tables**:
+  - `property_media`
+- **Validation Rules**:
+  - File type validation (JPEG, PNG, WebP)
+  - File size limit (e.g., 10MB)
+  - At least one primary media per property
+  - Valid URL format for media
+  - Caption length limits
+- **Dependencies**:
+  - Feature 1.1 (Property Data Model & API)
+  - Media upload infrastructure (local storage or S3 stub)
+- **Acceptance Criteria**:
+  - Users can upload property images during creation/edit
+  - Images display correctly in property gallery
+  - Primary image designated and shown first
+  - Images can be reordered, captioned, or removed
+  - Optimized image serving (thumbnails, responsive sizes)
+- **Definition of Done**:
+  - Media service implemented with upload/storage logic
+  - Media controller with CRUD endpoints for property media
+  - Frontend media upload component (drag & drop or file selector)
+  - Image optimization (thumbnails, responsive srcset)
+  - Gallery/slider component for property media display
+  - Media deletion with confirmation
+  - Unit tests for media service
+  - Integration tests for media endpoints
+  - Storage cleanup on property deletion
+
+### Feature 1.6: SEO Optimization
+- **Feature ID**: F106
+- **Description**: Implement SEO-friendly routes, metadata, and structured data for property pages.
+- **Business Value**: Improves organic search visibility and click-through rates, driving more qualified traffic to the platform.
+- **User Roles**: All (benefits public visibility)
+- **UI Screens**: All property-related pages
+- **APIs**: None (frontend enhancement)
+- **Database Tables**: None
+- **Validation Rules**:
+  - Meta title length < 60 characters
+  - Meta description length < 160 characters
+  - Open graph tags complete
+  - Structured data valid JSON-LD
+- **Dependencies**:
+  - Feature 1.1 (Property Data Model & API)
+  - Feature 1.2 (Property Listing & Filtering)
+  - Feature 1.3 (Property Detail Page)
+- **Acceptance Criteria**:
+  - Unique, descriptive title tags on all property pages
+  - Meta descriptions that encourage click-through
+  - Open graph tags for social sharing
+  - JSON-LD structured data for properties
+  - Clean, readable URL structure
+  - Canonical tags to prevent duplicate content
+- **Definition of Done**:
+  - Dynamic meta tags implemented based on page content
+  - Open graph tags for property sharing
+  - JSON-LD structured data for property listings and details
+  - SEO-friendly URL routes (no query strings in paths where possible)
+  - Sitemap.xml generation (dynamic or static)
+  - Robots.txt configured appropriately
+  - Lighthouse SEO audit passes
+  - Unit tests for SEO metadata generation
+
+### Feature 1.7: Property Publishing & Featured Listings
+- **Feature ID**: F107
+- **Description**: Implement property publishing/unpublishing functionality and featured properties display on homepage.
+- **Business Value**: Controls property visibility and enables promotional placement of premium listings to drive engagement.
+- **User Roles**: Agent (own properties), Admin (all properties)
+- **UI Screens**:
+  - Homepage featured properties section
+  - Property listing/admin controls
+  - Property detail (publish status indicator)
+- **APIs**:
+  - `POST /properties/:id/publish` – toggle published flag
+  - `GET /properties?is_premium=true` – filter for premium listings
+- **Database Tables**:
+  - `properties` (is_published, is_premium, premium_until fields)
+- **Validation Rules**:
+  - Only property owner or admin can publish/unpublish
+  - Premium duration validation (future date only)
+  - Published properties must have minimum required data
+- **Dependencies**:
+  - Feature 1.1 (Property Data Model & API)
+- **Acceptance Criteria**:
+  - Agents can publish/unpublish their own properties
+  - Admins can publish/unpublish any property
+  - Unpublished properties hidden from public listings
+  - Featured properties display on homepage rotation
+  - Premium badge visible on premium properties
+- **Definition of Done**:
+  - Publish/unpublish endpoint implemented with authorization
+  - Frontend controls for publishing (agent/admin views)
+  - Published/unpublished status indicators in property lists
+  - Featured properties component on homepage
+  - Premium badge component and display logic
+  - Authorization middleware checks ownership/admin role
+  - Unit tests for publish/unpublish logic
+  - Integration tests for publish endpoint
+
+---
+
+## Epic 2: User Profiles, Favorites & Leads
+
+### Feature 2.1: Role-Based Access Control (RBAC)
+- **Feature ID**: F201
+- **Description**: Implement role detection from JWT and route protection for visitor, customer, agent, and admin roles.
+- **Business Value**: Ensures users only access functionality and data appropriate to their role, maintaining security and data privacy.
+- **User Roles**: All roles (system enforcement)
+- **UI Screens**: None (middleware)
+- **APIs**: Applied to all protected routes
+- **Database Tables**:
+  - `users` (role field validation)
+- **Validation Rules**:
+  - Role present in JWT token
+  - Role value valid (visitor, customer, agent, admin)
+  - Route-specific role requirements enforced
+- **Dependencies**:
+  - Feature 0.2 (Authentication System Core)
+- **Acceptance Criteria**:
+  - Role-based middleware blocks unauthorized access (e.g., customer cannot access `/admin`)
+  - Agents can access agent-only routes
+  - Admins can access all routes
+  - Visitors limited to public routes
+  - Proper 403 responses for unauthorized access attempts
+- **Definition of Done**:
+  - RBAC middleware implemented
+  - Route protection applied to all relevant endpoints
+  - Role extraction from JWT verified
+  - Unit tests for RBAC middleware
+  - Integration tests for route protection
+  - API documentation updated with role requirements
+  - Error handling for insufficient permissions
+
+### Feature 2.2: User Profile Management
+- **Feature ID**: F202
+- **Description**: Implement user profile viewing and editing functionality for name and other profile details.
+- **Business Value**: Enables users to maintain accurate personal information, improving communication and personalization.
+- **User Roles**: Customer, Agent, Admin (visitors have limited profiles)
+- **UI Screens**:
+  - Profile page (`/profile`): view/edit
+- **APIs**:
+  - `GET /users/me` – profile
+  - `PUT /users/me` – update profile (name, etc.)
+- **Database Tables**:
+  - `users` (name, plus any additional profile fields)
+- **Validation Rules**:
+  - Name required (min 2 chars, max 100 chars)
+  - Phone number format validation (if collected)
+  - Email format validation (immutable via auth system)
+  - Avatar file type/size limits (if implemented)
+- **Dependencies**:
+  - Feature 0.2 (Authentication System Core)
+- **Acceptance Criteria**:
+  - Users can view their own profile information
+  - Users can update their profile details
+  - Profile changes reflected immediately and persistently
+  - Validation prevents invalid profile data
+  - Only profile owner can modify their profile
+- **Definition of Done**:
+  - User service with profile get/update methods
+  - User controller with profile endpoints
+  - Frontend profile page with edit form
+  - Profile data loaded from JWT/user ID
+  - Form validation with client-server parity
+  - Success/error handling for profile updates
+  - Unit tests for user service
+  - Integration tests for profile endpoints
+  - E2E test: register → update profile → verify changes persist
+
+### Feature 2.3: Favorites/Wishlist System
+- **Feature ID**: F203
+- **Description**: Implement ability for users to favorite/unfavorite properties and view their favorites list.
+- **Business Value**: Increases user engagement by enabling property bookmarking and facilitates repeated visits to preferred listings.
+- **User Roles**: Customer, Agent, Admin (visitors can favorites with session/localStorage fallback)
+- **UI Screens**:
+  - Favorites page (`/favorites`): grid of favorited properties
+  - Favorite button on property cards and detail pages
+- **APIs**:
+  - `POST /favorites` – add favorite (body: {propertyId})
+  - `DELETE /favorites/:propertyId` – remove favorite
+  - `GET /favorites` – list user's favorites (with property details)
+- **Database Tables**:
+  - `favorites` (id, user_id, property_id, created_at, deleted_at) with unique constraint on (user_id, property_id)
+- **Validation Rules**:
+  - User must be authenticated (or use session fallback for MVP)
+  - Property ID valid and exists
+  - Unique constraint prevents duplicate favorites
+  - Soft delete pattern for favorites
+- **Dependencies**:
+  - Feature 0.2 (Authentication System Core)
+  - Feature 1.1 (Property Data Model & API)
+- **Acceptance Criteria**:
+  - Users can toggle favorite status on properties
+  - Favorite state persists across sessions (when authenticated)
+  - Favorites page shows grid of favorited properties with property details
+  - Unauthenticated users can use session-based favorites (MVP limitation)
+  - Favorite count/badge updates in real-time
+- **Definition of Done**:
+  - Favorite service with add/remove/list methods
+  - Favorite controller with endpoints
+  - Frontend favorite button component (heart icon toggle)
+  - Favorites page component with property grid
+  - Favorite count in header/navbar
+  - Session-based fallback for unauthenticated users (MVP)
+  - Unit tests for favorite service
+  - Integration tests for favorite endpoints
+  - E2E test: register → favorite property → view favorites → remove favorite
+
+### Feature 2.4: Lead/Inquiry System
+- **Feature ID**: F204
+- **Description**: Implement property inquiry form that creates leads, and lead management system for agents/admins.
+- **Business Value**: Captures user interest in properties, enabling lead generation and follow-up for conversion opportunities.
+- **User Roles**: Visitor (submit), Agent/Admin (view/manage)
+- **UI Screens**:
+  - Inquiry modal (reused on property detail, search card, homepage CTA)
+  - Leads index (`/leads` or `/agent/leads`): table with status, property, customer
+  - Lead detail page (`/leads/:id`): conversation history, actions
+- **APIs**:
+  - `POST /leads` – create inquiry (requires propertyId, name, phone, email, message, source)
+  - `GET /leads` (agent/admin) – list leads with filters
+  - `GET /leads/:id` – lead detail
+  - `PATCH /leads/:id` – update status/notes
+  - `DELETE /leads/:id` – delete lead (if allowed)
+- **Database Tables**:
+  - `leads` (id, name, phone, email, message, property_id, source, status, created_at, updated_at, deleted_at). Optionally link to user via user_id if authenticated.
+- **Validation Rules**:
+  - Property ID valid and exists (published property)
+  - Name required (min 2 chars)
+  - Phone number format validation
+  - Email format validation
+  - Message required (min 10 chars, max 1000 chars)
+  - Source tracking (property_detail, search_results, homepage, etc.)
+  - Status validation (enum: new, contacted, viewing, booked, not_interested, etc.)
+- **Dependencies**:
+  - Feature 0.2 (Authentication System Core) - for optional user linking
+  - Feature 1.1 (Property Data Model & API) - for property validation
+- **Acceptance Criteria**:
+  - Users can submit property inquiries from various contexts
+  - Inquiry form creates a lead with correct association to property
+  - Agents/admins can view list of leads, filter by status, see details
+  - Lead status can be updated (new → contacted → etc.)
+  - Unauthenticated users can submit inquiry (lead created without user_id)
+  - Validation on all forms (required fields, email/phone format)
+- **Definition of Done**:
+  - Lead service with create/list/update/delete methods
+  - Lead controller with all endpoints
+  - Inquiry modal component (reusable across contexts)
+  - Leads index page with filtering and sorting
+  - Lead detail page with conversation view and action buttons
+  - Lead status update functionality
+  - Email notification placeholder (to be expanded in Epic 5)
+  - Unit tests for lead service
+  - Integration tests for lead endpoints
+  - E2E test: register as agent → favorite a property → send inquiry → view lead in agent dashboard
+
+---
+
+## Epic 3: Booking & Appointment Management
+
+### Feature 3.1: Booking Request System
+- **Feature ID**: F301
+- **Description**: Implement booking request creation from property detail or lead, with required property/agent/customer information and timing.
+- **Business Value**: Enables users to schedule property viewings, converting interest into tangible sales opportunities.
+- **User Roles**: Customer (request), Agent (receive/manage)
+- **UI Screens**:
+  - Booking modal (triggered from property detail "Schedule tour" or lead "Schedule visit")
+- **APIs**:
+  - `POST /bookings` – create booking request (requires propertyId, agentId, customerId (or user from JWT), startTime, endTime, notes)
+- **Database Tables**:
+  - `bookings` (id, property_id, agent_id, customer_id, start_time, end_time, status, notes, created_at, updated_at, deleted_at)
+- **Validation Rules**:
+  - Property ID valid, exists, and is published
+  - Agent ID valid and exists (agent role)
+  - Start time < end time
+  - Booking duration reasonable (min 15 min, max 4 hours)
+  - Start time in future (not past)
+  - Notes optional but length-limited
+- **Dependencies**:
+  - Feature 0.2 (Authentication System Core)
+  - Feature 1.1 (Property Data Model & API)
+  - Feature 2.4 (Lead/Inquiry System) - for booking from leads
+- **Acceptance Criteria**:
+  - Customer can request a booking for a published property
+  - Agent receives notification of booking request
+  - Booking includes property, agent, customer, and timing details
+  - Validation prevents invalid booking requests
+- **Definition of Done**:
+  - Booking service with create method
+  - Booking controller with create endpoint
+  - Booking modal component with datetime picker
+  - Form validation for booking request
+  - Integration with property and user data
+  - Agent notification triggered on booking request
+  - Unit tests for booking service
+  - Integration tests for booking creation endpoint
+  - E2E test: customer requests booking → agent sees notification
+
+### Feature 3.2: Booking Management & Workflow
+- **Feature ID**: F302
+- **Description**: Implement agent-side booking management including approval, rescheduling, cancellation, and completion tracking.
+- **Business Value**: Enables agents to efficiently manage their property viewing schedule and convert bookings into completed showings.
+- **User Roles**: Agent (manage own bookings), Admin (manage all bookings)
+- **UI Screens**:
+  - Booking detail page (agent/customer view)
+  - Agent actions: approve, reschedule, cancel, mark completed/no-show
+- **APIs**:
+  - `GET /bookings` – list with filters (for agent/admin: by agentId, date range, status; for customer: their bookings)
+  - `GET /bookings/:id` – booking detail
+  - `PATCH /bookings/:id` – update (e.g., reschedule, notes)
+  - `POST /bookings/:id/confirm` – agent confirms
+  - `POST /bookings/:id/complete` – mark as completed
+  - `POST /bookings/:id/cancel` – cancel (by either party or admin)
+- **Database Tables**:
+  - `bookings` (id, property_id, agent_id, customer_id, start_time, end_time, status, notes, created_at, updated_at, deleted_at)
+- **Validation Rules**:
+  - Booking belongs to agent (for agent-only actions) or user is admin
+  - Status transition validation (requested → confirmed → completed → cancelled/no_show)
+  - Rescheduling maintains valid time constraints
+  - Cancellation reason collection (optional)
+  - Completion requires confirmation first
+- **Dependencies**:
+  - Feature 3.1 (Booking Request System)
+  - Feature 2.1 (Role-Based Access Control)
+- **Acceptance Criteria**:
+  - Agent can view, confirm, reschedule, cancel, or mark booking as completed
+  - System prevents double‑booking for same agent (within a buffer, e.g., 15 minutes) via validation
+  - Booking status transitions enforced (cannot skip from requested to completed without confirmation)
+  - Timestamps stored in UTC; displayed in user's timezone
+  - Related data populated (property info, agent/customer names)
+- **Definition of Done**:
+  - Booking service with management methods
+  - Booking controller with all management endpoints
+  - Booking detail page with property/agent/customer info
+  - Action buttons for confirm, reschedule, complete, cancel
+  - Rescheduling interface with conflict detection
+  - Status transition validation and enforcement
+  - Timezone conversion for display
+  - Related data enrichment (property, agent, customer details)
+  - Unit tests for booking service
+  - Integration tests for booking management endpoints
+  - E2E test: customer books → agent confirms → customer sees confirmed status → agent marks complete
+
+### Feature 3.3: Agent Calendar & Availability
+- **Feature ID**: F303
+- **Description**: Implement calendar view for agents to see upcoming bookings and availability checking engine.
+- **Business Value**: Helps agents manage their schedule efficiently and prevents scheduling conflicts that lead to missed opportunities or poor user experience.
+- **User Roles**: Agent (view/manage), Admin (oversight)
+- **UI Screens**:
+  - Agent booking calendar page (`/agent/bookings` or `/calendar`): week/day view with slots
+  - Upcoming bookings widget on dashboard
+- **APIs**:
+  - `GET /bookings` – list with filters (for agent/admin: by agentId, date range, status)
+  - `GET /agents/:id/availability?date=YYYY-MM-DD` – return busy slots (optional)
+- **Database Tables**:
+  - `bookings` (utilizes agent_id and time range indexes)
+  - Indexes: agent_id, property_id, customer_id, status, start_time/end_time
+- **Validation Rules**:
+  - Date parameter valid (YYYY-MM-DD format)
+  - Agent ID valid and exists
+  - Time slot validation (non-overlapping with existing bookings)
+  - Buffer time enforcement (default 15 minutes)
+- **Dependencies**:
+  - Feature 3.2 (Booking Management & Workflow)
+  - Feature 1.1 (Property Data Model & API) - for property data in calendar
+- **Acceptance Criteria**:
+  - Agent can view upcoming bookings in calendar format
+  - Calendar shows booked time slots as unavailable
+  - Available slots clearly marked for new bookings
+  - System prevents double‑booking for same agent (within buffer) via validation
+  - Calendar view loads within reasonable time (<1s for a month)
+- **Definition of Done**:
+  - Booking service with availability checking methods
+  - Availability endpoint for agent date queries
+  - Frontend calendar component (week/day views)
+  - Time slot selection with conflict prevention
+  - Property booking details visible on slot click
+  - Upcoming bookings widget for dashboard
+  - Buffer time enforcement (e.g., 15 min between bookings)
+  - Unit tests for availability service
+  - Integration tests for calendar and availability endpoints
+  - Performance: calendar loads < 1s for monthly view
+  - E2E test: agent views calendar → sees booking → verifies no double-booking possible
+
+### Feature 3.4: Booking Notifications
+- **Feature ID**: F304
+- **Description**: Implement email/SMS triggers for booking events (request, confirmation, completion, cancellation).
+- **Business Value**: Keeps users informed about booking status changes, reducing no-shows and improving communication efficiency.
+- **User Roles**: Customer (receive updates), Agent (receive updates)
+- **UI Screens**: None (backend functionality with potential UI indicators)
+- **APIs**: None direct (triggered by booking workflow)
+- **Database Tables**: May extend bookings or create notification preferences
+- **Validation Rules**:
+  - Notification templates validated
+  - Recipient contact information verified
+  - Rate limiting for notification sending
+  - Template personalization validation
+- **Dependencies**:
+  - Feature 3.2 (Booking Management & Workflow)
+  - Feature 5.1 (Notification System Base) - to be developed
+- **Acceptance Criteria**:
+  - Customers receive booking request confirmation
+  - Agents receive new booking request notifications
+  - Customers receive booking confirmation/reminders
+  - Agents receive booking completion notifications
+  - Cancellation notifications sent to both parties
+  - Notification content includes relevant booking details
+- **Definition of Done**:
+  - Notification service extended for booking events
+  - Email templates for booking notifications
+  - SMS gateway integration (placeholder/twilio stub)
+  - Notification triggering on booking status changes
+  - Template personalization with booking/property/user data
+  - Unit tests for notification triggering
+  - Integration tests for booking workflow notifications
+  - Configuration for email/SMS providers (using test credentials in dev)
+
+---
+
+## Epic 4: Payments & Premium Listings
+
+### Feature 4.1: Payment Processing Integration
+- **Feature ID**: F401
+- **Description**: Implement Stripe payment integration for processing payments securely, including payment intent creation and confirmation.
+- **Business Value**: Enables monetization of platform features, creating revenue streams for sustainable business operations.
+- **User Roles**: Agent/Admin (make payments), System (process payments)
+- **UI Screens**:
+  - Payment modal (amount, card fields, submit)
+  - Payment success/failure screen
+- **APIs**:
+  - `POST /payment-intent` – create intent (body: {amount, currency, metadata?})
+  - `POST /payment/confirm` – confirm with client-side token (returns success)
+- **Database Tables**:
+  - `payments` (id, payment_intent_id (unique), amount, currency, status, payment_method_type, metadata_json, receipt_url, failure_code, failure_message, user_id (nullable), created_at, updated_at, deleted_at)
+- **Validation Rules**:
+  - Amount > 0 and within reasonable limits
+  - Valid currency code (USD, etc.)
+  - Payment method type validation
+  - Metadata structure validation
+  - Idempotency key requirement and validation
+- **Dependencies**:
+  - Feature 0.2 (Authentication System Core) - for user association
+  - Feature 1.1 (Property Data Model & API) - for property updates
+  - External Stripe API
+- **Acceptance Criteria**:
+  - Payments are created via secure Stripe integration; no raw card data touches our servers
+  - Successful payment updates property.is_premium and sets premium_until (now + duration)
+  - Failed payments do not alter property status and return appropriate error
+  - Webhook verifies signature and updates payment status reliably
+  - Idempotency keys prevent duplicate charges
+- **Definition of Done**:
+  - Payment service with Stripe integration
+  - Payment controller with intent creation and confirmation endpoints
+  - Frontend payment form using Stripe Elements
+  - Secure payment processing (no card data touches servers)
+  - Webhook endpoint for Stripe events
+  - Payment success/failure handling and UI
+  - Unit tests for payment service
+  - Integration tests using Stripe test mode/mocks
+  - API tests with mocked Stripe responses
+  - E2E test: upgrade property to premium → verify badge appears → after expiry, premium removed
+
+### Feature 4.2: Premium Listing Management
+- **Feature ID**: F402
+- **Description**: Implement functionality to mark properties as premium with expiry timelines and display premium badges.
+- **Business Value**: Creates revenue opportunity through featured property placement and provides performance analytics for premium features.
+- **User Roles**: Agent/Admin (set premium), Visitor (view premium badges)
+- **UI Screens**:
+  - Premium badge on property card/list
+  - Agent dashboard: upgrade to premium button
+  - Property listing filter: premium=true
+- **APIs**:
+  - `GET /users/me/payments` – payment history
+  - `POST /properties/:id/toggle-premium` (agent/admin) – after payment success, set premium_until
+  - `GET /properties?premium=true` – filter for premium listings
+- **Database Tables**:
+  - `payments` (for payment history)
+  - `properties` (is_premium, premium_until fields from Epic 1)
+- **Validation Rules**:
+  - Only property owner or admin can set premium status
+  - Premium duration must be future date
+  - Payment must be successful before premium activation
+  - Premium status automatically removed on expiry
+- **Dependencies**:
+  - Feature 4.1 (Payment Processing Integration)
+  - Feature 1.1 (Property Data Model & API)
+- **Acceptance Criteria**:
+  - Successful payment updates property.is_premium and sets premium_until (now + duration)
+  - Users can view payment history with status and amounts
+  - Premium badge visible on premium properties in lists and details
+  - Premium filter shows only active premium properties
+  - Expired premium properties revert to regular status
+- **Definition of Done**:
+  - Premium listing service with activation/expiry logic
+  - Premium toggle endpoint with payment verification
+  - Frontend premium badge component and display logic
+  - Payment history page for users
+  - Agent dashboard premium upgrade button
+  - Property listing filter for premium properties
+  - Automatic premium expiry handling (cron job or on-access check)
+  - Unit tests for premium listing service
+  - Integration tests for premium endpoints
+  - E2E test: payment success → premium activated → badge visible → time travel → premium expired
+
+### Feature 4.3: Invoice/Receipt Generation
+- **Feature ID**: F403
+- **Description**: Implement invoice and receipt generation for payments, with download/email capabilities.
+- **Business Value**: Provides users with payment documentation for accounting and reimbursement purposes, increasing trust and reducing support queries.
+- **User Roles**: Agent/Admin (who made payment), Accounting, User (for their payments)
+- **UI Screens**:
+  - Payment history page (`/payments`)
+  - Invoice view/download (simple HTML)
+- **APIs**:
+  - `GET /payments/:id` – transaction details (would include invoice data)
+  - `GET /users/me/payments` – payment history
+- **Database Tables**:
+  - `payments` (receipt_url field, or separate invoices table)
+- **Validation Rules**:
+  - Invoice number generation (unique, sequential)
+  - Tax calculation validation (if applicable)
+  - Company information completeness
+  - PDF/HTML format validity
+- **Dependencies**:
+  - Feature 4.1 (Payment Processing Integration)
+- **Acceptance Criteria**:
+  - Users can view payment history with status and amounts
+  - Invoice/receipt generated for each successful payment
+  - Invoice includes all required payment details
+  - Invoice available for download or email
+  - Professional invoice formatting
+- **Definition of Done**:
+  - Invoice/receipt generation service
+  - Payment history page with invoice links
+  - Invoice view/download functionality
+  - Professional invoice template (HTML/PDF)
+  - Automatic invoice generation on payment success
+  - Email invoice option (to be expanded in Epic 5)
+  - Unit tests for invoice service
+  - Integration tests for payment history with invoices
+
+---
+
+## Epic 5: Notifications & Real-Time Updates
+
+### Feature 5.1: Notification System Base
+- **Feature ID**: F501
+- **Description**: Implement notification table, basic CRUD operations, and notification service for creating and managing notifications.
+- **Business Value**: Provides foundation for user engagement through timely updates about platform activities.
+- **User Roles**: All (recipients of notifications)
+- **UI Screens**:
+  - Notification center page (`/notifications`): list with filter, bulk actions
+  - Notification dropdown (from header): shows recent items, uncount, view all
+- **APIs**:
+  - `GET /notifications` – list with filters (?unread=true, limit, offset)
+  - `PATCH /notifications/:id` – set read=true/false (or separate endpoints /read, /unread)
+  - `DELETE /notifications/:id` – delete single
+  - `POST /notifications/read-all` – mark all as read
+  - `DELETE /notifications/all` – delete all (if allowed)
+  - `GET /notifications/unread-count` – lightweight endpoint for badge
+- **Database Tables**:
+  - `notifications` (id, recipient_id, type, title, message, related_entity_id, related_entity_type, is_read, created_at, deleted_at)
+  - Indexes: recipient_id, is_read, created_at
+  - Foreign key: recipient_id → users.id
+- **Validation Rules**:
+  - Recipient ID valid and exists
+  - Notification type validation (enum: lead_assigned, booking_confirmed, payment_succeeded, etc.)
+  - Title and message required, length-limited
+  - Related entity ID and type validation when provided
+  - Read status boolean validation
+- **Dependencies**:
+  - Feature 0.2 (Authentication System Core) - for recipient identification
+- **Acceptance Criteria**:
+  - When a relevant event occurs (new lead assigned, booking confirmed, payment succeeded, etc.), a notification is created and sent to the appropriate user(s)
+  - Users can view their notifications in a list
+  - Users can mark notifications as read/unread
+  - Users can delete notifications
+  - Unread badge shows accurate count
+  - Notification payload includes sufficient data to link to entity (type and ID)
+- **Definition of Done**:
+  - Notification service with CRUD methods
+  - Notification controller with all endpoints
+  - Frontend notification center page with list and filters
+  - Notification dropdown component in header with unread badge
+  - Read/unread toggle functionality
+  - Bulc actions (mark all read, delete all)
+  - Unit tests for notification service
+  - Integration tests for notification endpoints
+  - E2E test: create a lead as visitor → agent assigned → notification appears in agent's bell → click → navigate to lead detail
+
+### Feature 5.2: Real-Time Delivery (WebSocket/SSE)
+- **Feature ID**: F502
+- **Description**: Implement real-time notification delivery via WebSocket or Server-Sent Events for immediate UI updates.
+- **Business Value**: Enhances user experience by providing instant updates without requiring page refreshes, increasing engagement and responsiveness.
+- **User Roles**: All (real-time recipients)
+- **UI Screens**:
+  - Notification center page (real-time updates)
+  - Notification dropdown (real-time badge updates)
+  - UI components showing live data (chat, leads, bookings)
+- **APIs**:
+  - WebSocket endpoint: `/ws/notifications` (or SSE: `/api/notifications/stream`)
+- **Database Tables**: None (real-time layer)
+- **Validation Rules**:
+  - WebSocket connection authentication
+  - Message format validation
+  - Connection heartbeat and reconnection logic
+  - Subscription validation (users only receive their notifications)
+- **Dependencies**:
+  - Feature 5.1 (Notification System Base)
+  - Real-time library (Socket.io or native SSE)
+- **Acceptance Criteria**:
+  - Unread badge updates in real‑time via WebSocket/SSE
+  - Clicking a notification marks it as read and optionally navigates to the related entity
+  - Real-time connection recovers after temporary network loss
+  - Users see notifications appear instantly when triggered
+  - Notification center updates in real-time without manual refresh
+- **Definition of Done**:
+  - Real-time connection service implemented
+  - Authentication for WebSocket/SSE connections
+  - Notification broadcasting to specific users
+  - Frontend real-time listeners for notification updates
+  - Unread badge updates in real-time
+  - Notification center real-time list updates
+  - Connection recovery after network interruption
+  - Unit tests for real-time service
+  - Integration tests for real-time notification delivery
+  - E2E test: trigger event → see real-time notification → interact with notification
+
+### Feature 5.3: Email/SMS Notification Gateway
+- **Feature ID**: F503
+- **Description**: Implement email and SMS notification sending capabilities for critical events via third-party providers.
+- **Business Value**: Ensures users receive important notifications even when not actively using the platform, increasing reach and engagement.
+- **User Roles**: All (email/SMS recipients)
+- **UI Screens**:
+  - Settings page to configure email/SMS preferences (optional)
+- **APIs**: None direct (triggered by notification service)
+- **Database Tables**: May extend notifications or create preference table
+- **Validation Rules**:
+  - Email format validation for recipients
+  - Phone number format validation for SMS
+  - Template personalization validation
+  - Rate limiting per user/provider
+  - Provider API credential validation
+- **Dependencies**:
+  - Feature 5.1 (Notification System Base)
+  - External email/SMS providers (SendGrid, Twilio, etc. - using test credentials in dev)
+- **Acceptance Criteria**:
+  - Email/SMS fallback sends messages for critical events (configurable)
+  - Users can configure email/SMS preferences
+  - Critical events trigger email/SMS when enabled
+  - Notification content personalized with relevant data
+  - Opt-out compliance respected
+- **Definition of Done**:
+  - Email notification service (SendGrid/SMTP template)
+  - SMS notification service (Twilio template)
+  - Notification service extension for email/SMS triggering
+  - User notification preferences page
+  - Template personalization with notification/event data
+  - Rate limiting and throttling implementation
+  - Unit tests for email/SMS services
+  - Integration tests for notification gateway
+  - Configuration for providers using test/dev credentials
+  - E2E test: critical event occurs → email/SMS sent → user receives message
+
+---
+
+## Epic 6: Admin Dashboard & Management
+
+### Feature 6.1: Admin Authentication & Authorization
+- **Feature ID**: F601
+- **Description**: Implement admin-specific authentication checks and role-based access control for admin routes.
+- **Business Value**: Ensures only authorized administrators can access sensitive management functions and data.
+- **User Roles**: Admin only (protected routes)
+- **UI Screens**: None (middleware)
+- **APIs**: Applied to all `/admin/*` routes
+- **Database Tables**:
+  - `users` (role field must include admin)
+- **Validation Rules**:
+  - User must be authenticated
+  - User role must be exactly "admin" (not agent/customer)
+  - Admin privileges verified for each protected endpoint
+- **Dependencies**:
+  - Feature 0.2 (Authentication System Core)
+  - Feature 2.1 (Role-Based Access Control)
+- **Acceptance Criteria**:
+  - Admin can view KPIs that update periodically (or on refresh)
+  - Admin can search/filter users, properties, leads, bookings, payments
+  - Admin can perform CRUD operations on each entity with proper authorization
+  - Non-admin users redirected or receive 403 for admin routes
+  - Admin role changes require admin confirmation and are logged
+- **Definition of Done**:
+  - Admin RBAC middleware implemented
+  - Route protection applied to all admin endpoints
+  - Admin role verification from JWT
+  - Unit tests for admin authorization middleware
+  - Integration tests for admin route protection
+  - API documentation updated with admin role requirements
+  - Error handling for insufficient admin privileges
+
+### Feature 6.2: Admin Dashboard & Analytics
+- **Feature ID**: F602
+- **Description**: Implement admin dashboard with KPI cards, activity feed, and analytical charts.
+- **Business Value**: Provides administrators with operational visibility and insights for data-driven decision making.
+- **User Roles**: Admin only
+- **UI Screens**:
+  - Admin dashboard page (`/admin` or `/dashboard/admin`): KPI row, activity feed, charts, quick links
+- **APIs**:
+  - `GET /admin/dashboard/summary` – KPI metrics
+  - `GET /admin/logs/recent` – activity feed items
+  - `GET /charts/lead-sources` – data for pie chart
+  - `GET /charts/leads-over-time` – time‑series data
+  - `GET /charts/property-views` – property popularity data
+- **Database Tables**:
+  - Reuses existing tables: users, properties, leads, bookings, payments
+  - May use summary/cache tables for reporting
+  - Indexes on frequently filtered columns
+- **Validation Rules**:
+  - Date range parameters valid for chart APIs
+  - Pagination parameters valid for list APIs
+  - Filter values validated against allowed options
+  - Data freshness/cache validity checked
+- **Dependencies**:
+  - Feature 1.1 (Property Data Model & API)
+  - Feature 2.4 (Lead/Inquiry System)
+  - Feature 3.1-3.4 (Booking System)
+  - Feature 4.1-4.3 (Payment System)
+  - Feature 5.1-5.3 (Notification System)
+  - Charting library (recharts, victory, or similar)
+- **Acceptance Criteria**:
+  - Admin can view KPIs that update periodically (or on refresh)
+  - Activity feed shows recent system activities
+  - Charts display accurate data for selected time periods
+  - KPI cards show meaningful metrics (leads today, conversion rate, etc.)
+  - Dashboard loads within reasonable time
+- **Definition of Done**:
+  - Dashboard service with data aggregation methods
+  - Dashboard controller with endpoint implementations
+  - Frontend dashboard layout with KPI row, activity feed, charts
+  - KPI card component with value, label, trend indicator
+  - Chart components for pie, line, bar charts
+  - Activity feed item component
+  - Data caching strategy for performance
+  - Unit tests for dashboard service
+  - Integration tests for dashboard endpoints
+  - E2E test: admin login → view dashboard → verify data accuracy
+
+### Feature 6.3: Admin User Management
+- **Feature ID**: F603
+- **Description**: Implement CRUD operations for user management (except self-deletion), including role management and password reset.
+- **Business Value**: Enables administrators to manage user accounts, roles, and access permissions for platform governance.
+- **User Roles**: Admin only
+- **UI Screens**:
+  - Users management page: table with role, status, actions (edit, reset password, delete)
+- **APIs**:
+  - `GET /admin/users` – paginated list with filters (role, search)
+  - `GET /admin/users/:id` – user detail (excluding password hash)
+  - `DELETE /admin/users/:id` – delete user (soft) (admin only)
+  - `PATCH /admin/users/:id/role` – change role (admin only)
+- **Database Tables**:
+  - `users` (with additional admin-only fields if needed)
+- **Validation Rules**:
+  - Admin cannot delete own account (self-protection)
+  - Role changes require validation (valid roles only)
+  - User ID validation and ownership check
+  - Email uniqueness validation on update
+  - Password reset token validation and expiry
+- **Dependencies**:
+  - Feature 0.2 (Authentication System Core)
+  - Feature 2.2 (User Profile Management)
+- **Acceptance Criteria**:
+  - Admin can search/filter users by role, status, name, email
+  - Admin can view user details (excluding sensitive data)
+  - Admin can edit user details (role, status, contact info)
+  - Admin can reset user passwords (generates reset link)
+  - Admin can delete users (soft delete preserves data)
+  - Admin can change user roles (with confirmation)
+  - Role changes are logged for audit trail
+- **Definition of Done**:
+  - User admin service with CRUD methods (admin-specific logic)
+  - User admin controller with endpoints
+  - Frontend users management table with filtering, sorting, pagination
+  - Edit user modal/form with validation
+  - Role change modal with confirmation and logging
+  - Password reset functionality (email-based)
+  - Soft delete implementation with restore option
+  - Unit tests for user admin service
+  - Integration tests for user admin endpoints
+  - E2E test: admin login → manage users → edit role → reset password → delete user
+
+### Feature 6.4: Admin Property Management
+- **Feature ID**: F604
+- **Description**: Implement CRUD operations for property management, including bulk publish/unpublish/delete and advanced filtering.
+- **Business Value**: Enables administrators to manage the property inventory, ensure data quality, and handle exceptional cases.
+- **User Roles**: Admin only
+- **UI Screens**:
+  - Properties management page: table/list with status, price, agent, actions (edit, publish, delete)
+- **APIs**:
+  - `GET /admin/properties` – list of all properties (incl. draft/unpublished) with filters
+  - `POST /admin/properties/bulk` – bulk update (publish/unpublish/delete) based on selected IDs
+- **Database Tables**:
+  - `properties` (all fields, including admin-only if needed)
+  - `property_media`
+- **Validation Rules**:
+  - Bulk action validation (selected IDs valid)
+  - Property ID validation for individual operations
+  - Status transition validation (draft ↔ published)
+  - Media validation for property operations
+  - Agent assignment validation (valid agent ID)
+- **Dependencies**:
+  - Feature 1.1 (Property Data Model & API)
+  - Feature 1.5 (Property Media Management)
+- **Acceptance Criteria**:
+  - Admin can search/filter properties by status, price, agent, location, etc.
+  - Admin can view all properties including draft/unpublished
+  - Admin can edit property details
+  - Admin can perform bulk actions (publish/unpublish/delete) on selected properties
+  - Bulk actions show success/error counts
+  - Property media management integrated
+  - Agent assignment validation
+- **Definition of Done**:
+  - Property admin service with CRUD and bulk methods
+  - Property admin controller with endpoints
+  - Frontend properties management table with advanced filtering
+  - Bulk action modal with selection and confirmation
+  - Edit property form with all fields and validation
+  - Media management integration (upload, reorder, delete)
+  - Bulk action success/error reporting
+  - Unit tests for property admin service
+  - Integration tests for property admin endpoints
+  - E2E test: admin login → manage properties → bulk publish → verify public listing
+
+### Feature 6.5: Admin Lead, Booking & Payment Management
+- **Feature ID**: F605
+- **Description**: Implement CRUD operations for leads, bookings, and payments with admin-level access and filtering.
+- **Business Value**: Provides administrators with oversight and management capabilities for core business entities and transactions.
+- **User Roles**: Admin only
+- **UI Screens**:
+  - Leads management page: table with status, property, customer, actions (view, assign, delete)
+  - Bookings management page: table with status, property, agent, customer, time, actions (confirm, complete, cancel)
+  - Payments management page: table with status, amount, user, actions (view, refund)
+- **APIs**:
+  - `GET /admin/leads` – list of all leads (including protected data) with filters
+  - `GET /admin/bookings` – list of all bookings with filters
+  - `GET /admin/payments` – list of all payments with filters
+  - `POST /admin/reports/export` – request export with format and filters (returns job ID or file)
+  - `GET /admin/reports/job/:id/status` – check export progress
+- **Database Tables**:
+  - `leads` (all fields)
+  - `bookings` (all fields)
+  - `payments` (all fields)
+- **Validation Rules**:
+  - Entity ID validation and existence check
+  - Admin access validation for all entities
+  - Filter validation for list endpoints
+  - Export request validation (format, date ranges, etc.)
+  - Refund validation and authorization (for payments)
+- **Dependencies**:
+  - Feature 2.4 (Lead/Inquiry System)
+  - Feature 3.1-3.4 (Booking System)
+  - Feature 4.1-4.3 (Payment System)
+- **Acceptance Criteria**:
+  - Admin can search/filter leads, bookings, payments by various criteria
+  - Admin can view detailed information for each entity type
+  - Admin can perform CRUD operations (where applicable)
+  - Admin can initiate refunds for payments (if applicable)
+  - Admin can request data exports (CSV/XML)
+  - Export progress tracking available
+- **Definition of Done**:
+  - Lead, booking, payment admin services with CRUD methods
+  - Corresponding admin controllers with endpoints
+  - endpoints with endpoints
+  - Frontend management tables for each entity type with filtering
+  - Detail views for leads, bookings, payments
+  - Action buttons appropriate to entity type (assign leads, cancel bookings, refund payments)
+  - Export functionality with format selection and date range filters
+  - Export progress tracking and completion notification
+  - Unit tests for admin services
+  - Integration tests for admin endpoints
+  - E2E test: admin login → manage entities → filter → view detail → perform action
+
+### Feature 6.6: Admin Settings Management
+- **Feature ID**: F606
+- **Description**: Implement AI configuration and system settings management for administrators.
+- **Business Value**: Enables administrators to tune platform behavior and functionality without requiring code changes.
+- **User Roles**: Admin only
+- **UI Screens**:
+  - AI settings page: form with model selector, temperature slider, max tokens input, prompt textarea, quota fields, save/test buttons
+  - System settings page: site name, contact email, maintenance toggle, etc.
+- **APIs**:
+  - `GET /settings/ai` – current AI configuration
+  - `PUT /settings/ai` – update AI configuration
+  - `POST /settings/ai/test` – send test prompt to AI and return response
+  - `GET /settings/system` – system settings
+  - `PUT /settings/system` – update system settings
+- **Database Tables**:
+  - May create settings table or use existing configuration approach
+  - Could extend users table for admin-specific settings if needed
+- **Validation Rules**:
+  - AI model selection from allowed list
+  - Temperature validation (0-2 range)
+  - Max tokens validation (positive integer, within limits)
+  - System settings validation (string lengths, format, etc.)
+  - Maintenance toggle boolean validation
+- **Dependencies**:
+  - Feature 7.1-7.4 (AI Chatbot System) - for AI settings
+- **Acceptance Criteria**:
+  - AI settings can be saved and affect subsequent chat requests
+  - System settings can be toggled (e.g., maintenance mode displays banner to non‑admins)
+  - Settings persistence across sessions
+  - Settings validation prevents invalid configurations
+  - Test AI configuration endpoint returns expected response
+- **Definition of Done**:
+  - AI settings service with get/update methods
+  - AI settings controller with endpoints
+  - System settings service with get/update methods
+  - System settings controller with endpoints
+  - Frontend AI settings form with all controls and validation
+  - Frontend system settings form with toggles and inputs
+  - AI configuration test endpoint
+  - Settings persistence implementation
+  - Unit settings for settings services
+  - Integration tests for settings endpoints
+  - E2E test: admin login → update AI settings → test configuration → verify effect on chat
+
+### Feature 6.7: Admin Reporting & Export
+- **Feature ID**: F607
+- **Description**: Implement data export functionality for administrators to download reports in various formats.
+- **Business Value**: Enables administrators to extract data for external analysis, compliance reporting, and business intelligence.
+- **User Roles**: Admin only
+- **UI Screens**:
+  - Export modal: format selection, date range filters, submit
+- **APIs**:
+  - `POST /admin/reports/export` – request export with format and filters (returns job ID or file)
+  - `GET /admin/reports/job/:id/status` – check export progress
+- **Database Tables**:
+  - May create export job tracking table
+  - Reuses source tables for data extraction
+- **Validation Rules**:
+  - Export format validation (CSV, XLSX, JSON)
+  - Date range validation (from ≤ to, reasonable limits)
+  - Field selection validation (valid entity fields)
+  - File size limits and pagination for large exports
+  - Job ID generation and tracking
+- **Dependencies**:
+  - Feature 6.2-6.6 (Admin Management Features)
+  - Export library (e.g., csv-stringify, xlsx) for report generation
+- **Acceptance Criteria**:
+  - Admin can request data exports for users, properties, leads, bookings, payments
+  - Export functionality generates file (CSV/Excel) with selected data and downloads it
+  - Admin can select specific date ranges for exports
+  - Admin can choose export format (CSV, XLSX, etc.)
+  - Export progress tracking available for large datasets
+- **Definition of Done**:
+  - Export service with data extraction and formatting methods
+  - Export controller with endpoints
+  - Frontend export modal with format selection, date range, filters
+  - Supported export formats: CSV, XLSX, JSON
+  - Data filtering and date range functionality
+  - Export job tracking with status checking
+  - Progress indicators for large exports
+  - Unit tests for export service
+  - Integration tests for export endpoints
+  - E2E test: admin login → request export → monitor progress → download file → verify contents
+
+---
+
+## Epic 7: AI Chatbot & Advanced Search
+
+### Feature 7.1: AI Chatbot Service Core
+- **Feature ID**: F701
+- **Description**: Implement backend service for orchestrating LLM calls, managing conversation history, and coordinating tool usage.
+- **Business Value**: Provides the intelligence layer for natural language property search and assistance, differentiating the platform through AI-powered capabilities.
+- **User Roles**: Visitor, Customer, Agent, Admin
+- **UI Screens**: None (backend service)
+- **APIs**:
+  - `POST /chat/message` – send user message, receive assistant reply (streaming optional)
+  - `GET /chat/messages?stream=true` – SSE endpoint for streaming response
+- **Database Tables**:
+  - May create conversation history table (optional for MVP)
+- **Validation Rules**:
+  - Message content validation (length, profanity filtering)
+  - User authentication or session validation
+  - Rate limiting per user/IP
+  - Input sanitization for injection prevention
+  - Conversation context size limits
+- **Dependencies**:
+  - Feature 0.2 (Authentication System Core)
+  - External Anthropic API (or compatible LLM)
+- **Acceptance Criteria**:
+  - User can open chat widget and type natural language queries like "Show me 3‑bedroom homes under $400k in Brooklyn"
+  - Assistant replies with a list of property cards that match the criteria, each including a short explanation why it matches
+  - Follow‑up questions keep context: after seeing results, user says "add a garage" → filters updated accordingly
+  - If AI service returns error or is unavailable, system shows a friendly message and suggests using filter search
+  - Rate limiting: after N requests per minute, user receives "Please slow down" message
+- **Definition of Done**:
+  - AI chatbot service with LLM orchestration logic
+  - Prompt management and optimization
+  - Conversation history management (short-term for MVP)
+  - Frontend chat widget component with input and message display
+  - Message streaming implementation (SSE or WebSocket)
+  - Error handling for AI service failures
+  - Rate limiting implementation
+  - Unit tests for chatbot service
+  - Integration tests for chat endpoints with mocked AI
+  - E2E test: open chat → ask for 2‑bed under $300k → receive list → click view on first → navigate to property detail
+
+### Feature 7.2: AI Tool Integration (Property Search, Actions)
+- **Feature ID**: F702
+- **Description**: Implement tools that the AI can invoke: property search, save favorite, schedule viewing, get agent contact, etc.
+- **Business Value**: Enables the AI assistant to perform useful actions beyond conversation, increasing user productivity and conversion potential.
+- **User Roles**: Visitor, Customer, Agent, Admin
+- **UI Screens**:
+  - Chat widget (collapsible panel) with input area, message list, send button
+  - Chat page (`/chat`) – full‑screen variant
+  - Message bubbles: user and bot (with avatars, timestamps)
+  - Bot message may contain: text, property cards (with mini‑actions), suggestions chips
+- **APIs**: None direct (used internally by chat service)
+- **Database Tables**:
+  - Leverages existing tables: properties, favorites, bookings, leads, users
+- **Validation Rules**:
+  - Tool input validation and sanitization
+  - Authorization checks for tool execution (user permissions)
+  - Tool execution result validation
+  - Rate limiting per tool type
+- **Dependencies**:
+  - Feature 7.1 (AI Chatbot Service Core)
+  - Feature 1.2 (Property Listing & Filtering) - for property search tool
+  - Feature 2.3 (Favorites/Wishlist System) - for save favorite tool
+  - Feature 3.1 (Booking Request System) - for schedule viewing tool
+  - Feature 1.1/1.3 (Property Data Model & Detail) - for get agent contact tool
+- **Acceptance Criteria**:
+  - User can click "View" on a property card in chat to navigate to its detail page
+  - User can click "Save" to add to favorites; confirmation appears
+  - User can click "Schedule" to open booking modal with property pre‑filled
+  - Assistant shows property cards within chat with action buttons (View, Save, Schedule)
+  - Bot message may contain: text, property cards (with mini‑actions), suggestions chips
+  - Saved searches appear under "My searches" and can be re‑run with one click
+- **Definition of Done**:
+  - Tool service implementing: property search, save favorite, schedule viewing, get agent contact
+  - Property card small component for chat display with action buttons
+  - Suggestion chip component for query auto-completion
+  - Chat message bubble component with action rendering
+  - Tool execution authorization and validation
+  - Tool result formatting for chat display
+  - Unit tests for tool service
+  - Integration tests for tool execution
+  - E2E test: chat interaction → tool execution → UI action → verify result
+
+### Feature 7.3: Conversation Context Management
+- **Feature ID**: F703
+- **Description**: Implement context-aware conversation that remembers recent properties shown, user preferences, and conversation history.
+- **Business Value**: Creates a more natural and efficient conversational experience by reducing repetition and enabling productive follow-up questions.
+- **User Roles**: Visitor, Customer, Agent, Admin
+- **UI Screens**: Same as Feature 7.1 and 7.2
+- **APIs**: Same as Feature 7.1
+- **Database Tables**:
+  - Conversation history table (if implementing persistent storage)
+  - User preferences table (optional)
+  - Leverages existing tables for context data
+- **Validation Rules**:
+  - Context size limits (prevent excessive memory usage)
+  - Data freshness validation (stale context handling)
+  - User preference validation and sanitization
+  - Session/storage validation for persistence layer
+- **Dependencies**:
+  - Feature 7.1 (AI Chatbot Service Core)
+  - Feature 7.2 (AI Tool Integration)
+- **Acceptance Criteria**:
+  - Context‑aware conversation: remembers recent properties shown, user preferences
+  - Ability to show property cards within chat with action buttons (View, Save, Schedule)
+  - Follow‑up questions keep context: after seeing results, user says "add a garage" → filters updated accordingly
+  - Search results can be sorted by price low/high, date new/old, relevance
+  - Saved favorites accessible from chat ("Show my saved properties")
+- **Definition of Done**:
+  - Conversation context service with state management
+  - Context persistence strategy (client-side localStorage or server-side for MVP)
+  - Recent properties tracking in context
+  - User preference storage and retrieval
+  - Context-aware prompt enhancement for LLM
+  - Context expiration and cleanup
+  - Unit tests for context service
+  - Integration tests for chatbot with context scenarios
+  - E2E test: chat → see properties → ask follow-up → verify context retained
+
+### Feature 7.4: Advanced Search & Saved Searches
+- **Feature ID**: F704
+- **Description**: Implement advanced search with filtering, sorting, and saved search functionality for repeated queries and alerts.
+- **Business Value**: Enhances search flexibility and efficiency, enabling users to refine searches and reuse complex queries.
+- **User Roles**: Visitor, Customer, Agent, Admin
+- **UI Screens**:
+  - Saved searches modal/list
+  - Search filters sidebar (price, beds, baths, property type, location, sort)
+  - Search results page with sorting dropdown and saved‑search shortcut
+  - Admin AI usage dashboard (charts, tables)
+- **APIs**:
+  - `GET /search/saved` – list user's saved searches
+  - `POST /search/saved` – create saved search (body: {name, query})
+  - `DELETE /saved-searches/:id` – delete saved search
+  - `GET /search/suggest?q=` – autosuggest (enhanced with saved queries?)
+  - `POST /search` – advanced search with filters, sort, page, limit (non‑AI)
+  - `GET /search/` (as before) – AI search with explanation
+  - `GET /usage/ai` – admin endpoint for AI usage stats (requests, tokens, estimated cost)
+  - `POST /usage/ai/reset` – reset counters (admin)
+- **Database Tables**:
+  - `search_logs` (if not already) for analytics (id, query_text, parsed_filters, results_count, source, ip_address, user_agent, created_at)
+  - `saved_searches` (id, user_id, name, query_text, parsed_filters, created_at, updated_at, deleted_at)
+  - Add optional column `last_searched_at` to users (or derive from search_logs)
+- **Validation Rules**:
+  - Saved search name validation (required, unique per user, length limits)
+  - Query text validation and sanitization
+  - Filter criteria validation (matches property fields)
+  - Sort option validation (allowed values)
+  - Pagination validation
+  - User ID validation for saved searches
+  - Search log entry validation
+- **Dependencies**:
+  - Feature 7.1 (AI Chatbot Service Core)
+  - Feature 1.2 (Property Listing & Filtering) - for non-AI search
+  - Feature 1.4 (AI-Powered Natural Language Search) - for AI search
+- **Acceptance Criteria**:
+  - Search results can be sorted by price low/high, date new/old, relevance
+  - Saved searches appear under "My searches" and can be re‑run with one click
+  - Saved favorites accessible from chat ("Show my saved properties")
+  - Usage tracking: admin can see total tokens used today, requests count, estimated cost
+  - Accessibility: keyboard navigable, ARIA labels on chat input/button, message roles
+  - Unit tests for chat service (prompt building, tool invocation, context handling)
+  - API tests for chat endpoint with mocked AI
+  - E2E test: open chat → ask for 2‑bed under $300k → receive list → click view on first → navigate to correct property detail → verify details match query
+  - Performance: first response < 2s (excluding actual LLM latency) under normal load
+  - Fallback test: disable AI microservice → query returns filter‑based results with banner
+- **Definition of Done**:
+  - Search service with advanced filtering, sorting, and AI integration
+  - Search controller with all endpoints
+  - Saved search service with CRUD operations
+  - Frontend search filters sidebar with all filter types
+  - Search results page with sorting dropdown
+  - Saved searches modal and list component
+  - Autosuggest enhanced with saved search queries
+  - Usage tracking service and admin dashboard
+  - Accessibility implementation (keyboard nav, ARIA labels, roles)
+  - Unit tests for search and saved search services
+  - Integration tests for search endpoints
+  - E2E test for chat with search and tool usage
+  - Performance benchmarks met
+  - Fallback mechanism verified
+
+---
+
+## Epic 8: Polish, Performance & Release Preparation
+
+### Feature 8.1: Accessibility Compliance (WCAG 2.1 AA)
+- **Feature ID**: F801
+- **Description**: Implement accessibility fixes for WCAG 2.1 AA compliance including focus management, ARIA labels, color contrast, and keyboard navigation.
+- **Business Value**: Ensures the platform is usable by people with disabilities, expanding market reach and reducing legal risk.
+- **User Roles**: All users (especially those with disabilities)
+- **UI Screens**: All screens from previous passes, refined
+- **APIs**: None (frontend enhancement)
+- **Database Tables**: None
+- **Validation Rules**:
+  - Color contrast ratio ≥ 4.5:1 for normal text, ≥ 3:1 for large text
+  - All interactive elements keyboard accessible
+  - Focus visible and logical tab order
+  - ARIA labels provided for all non-text controls
+  - Form fields properly associated with labels
+  - Heading hierarchy correct (h1-h6)
+  - Landmark regions identified (header, nav, main, footer)
+- **Dependencies**:
+  - All UI features from Epics 1-7
+- **Acceptance Criteria**:
+  - All WCAG 2.1 AA automated checks pass (using axe or similar)
+  - Lighthouse score >90 for accessibility on mobile and desktop
+  - Keyboard navigable throughout application
+  - Screen reader compatible with proper ARIA labels
+  - Focus traps implemented and functional for modals
+  - Sufficient color contrast in all UI components
+- **Definition of Done**:
+  - Accessibility audit completed and issues fixed
+  - Focus management service for modals and dialogs
+  - ARIA labels added to all interactive elements
+  - Color palette updated to meet contrast requirements
+  - Keyboard navigation implemented and tested
+  - Skip-to-content links implemented
+  - Landmark regions added for screen reader navigation
+  - Form validation and error message accessibility
+  - Unit tests for accessibility components
+  - Manual accessibility testing completed
+  - Lighthouse accessibility audit passes
+
+### Feature 8.2: Performance Optimization
+- **Feature ID**: F802
+- **Description**: Optimize application performance through lazy loading, code splitting, bundle analysis, caching headers, and database query optimization.
+- **Business Value**: Improves user experience through faster load times and interactions, reducing bounce rates and increasing engagement.
+- **User Roles**: All users
+- **UI Screens**: All screens (performance benefits)
+- **APIs**: All endpoints (performance benefits)
+- **Database Tables**: May add indexes for reporting or frequent queries
+- **Validation Rules**:
+  - Bundle size < 150 KB gzip for JS (initial load)
+  - First Contentful Paint < 1.5s on 3G
+  - Time to Interactive < 3s on 3G
+  - Lighthouse score >90 for performance on mobile and desktop
+  - Critical rendering path optimized
+  - Image loading optimized (lazy load, responsive sizes)
+  - Database query performance benchmarks met
+- **Dependencies**:
+  - All backend and frontend features from Epics 0-7
+- **Acceptance Criteria**:
+  - Bundle size < 150 KB gzip for JS (initial load)
+  - First Contentful Paint < 1.5s on 3G
+  - Time to Interactive < 3s on 3G
+  - No critical performance regressions introduced
+  - Lazy loading implemented for images and components
+  - Code splitting implemented for route-based chunks
+  - Caching headers implemented for API responses
+  - Database query optimization completed
+- **Definition of Done**:
+  - Bundle analysis completed and optimized
+  - Code splitting implemented (route-based, vendor splitting)
+  - Lazy loading for images and below-the-fold content
+  - External resource optimization (fonts, third-party scripts)
+  - Caching strategy implemented (ETag, Cache-Control, Expires)
+  - Database query optimization (indexes, query refactoring)
+  - Performance testing completed
+  - Lighthouse performance audit passes
+  - Unit tests for performance optimizations
+  - Integration tests for performance scenarios
+
+### Feature 8.3: SEO Enhancements
+- **Feature ID**: F803
+- **Description**: Implement advanced SEO improvements including meta tags, open graph, structured data, sitemap.xml, and robots.txt.
+- **Business Value**: Improves organic search visibility and click-through rates, driving more qualified traffic and improving conversion funnels.
+- **User Roles**: All users (indirect through improved discovery)
+- **UI Screens**: All pages (meta tags and structured data)
+- **APIs**: None (frontend and build-time enhancements)
+- **Database Tables**: None
+- **Validation Rules**:
+  - Meta title length < 60 characters
+  - Meta description length < 160 characters
+  - Open graph tags complete for all pages
+  - JSON-LD structured data valid for property and other entities
+  - Sitemap.xml includes all important pages
+  - robots.txt configured for optimal crawling
+  - Canonical tags prevent duplicate content issues
+- **Dependencies**:
+  - Feature 1.6 (SEO Optimization) - baseline to improve upon
+  - All content pages from Epics 1-7
+- **Acceptance Criteria**:
+  - Lighthouse score >90 for SEO on mobile and desktop
+  - All pages have appropriate meta tags
+  - Structured data present and valid for property listings/details
+  - Sitemap.xml generated and submitted to search engines
+  - robots.txt optimized for search engine crawling
+  - Open graph tags enable rich social sharing
+  - Structured data enables rich search results
+- **Definition of Done**:
+  - Comprehensive meta tag implementation for all page types
+  - Open graph tags for rich social sharing
+  - JSON-LD structured data for properties, blog posts, etc.
+  - Dynamic sitemap.xml generation
+  - Optimized robots.txt configuration
+  - Canonical tag implementation to prevent duplicates
+  - Structured data testing with Google's Rich Results Test
+  - Unit tests for SEO metadata generation
+  - Lighthouse SEO audit passes
+
+### Feature 8.4: Error Handling & Resilience
+- **Feature ID**: F804
+- **Description**: Implement error boundaries, graceful degradation, offline fallback, and stale‑while‑revalidate patterns.
+- **Business Value**: Improves application reliability and user experience during partial failures or poor network conditions.
+- **User Roles**: All users
+- **UI Screens**:
+  - Custom 404/500 pages with branding
+  - Maintenance mode banner
+  - Error boundaries in UI components
+- **APIs**:
+  - Review all endpoints for idempotency, proper status codes, and consistent error shapes
+  - Add rate limiting headers (Retry‑Where applicable)
+- **Database Tables**: None
+- **Validation Rules**:
+  - Error boundaries catch and handle JavaScript errors
+  - Graceful degradation for non-critical feature failures
+  - Offline fallback or stale‑while‑revalidate for data fetching
+  - Consistent error response formats across APIs
+  - Proper HTTP status codes for all scenarios
+  - Rate limiting headers implemented where appropriate
+- **Dependencies**:
+  - All backend and frontend features from Epics 0-7
+- **Acceptance Criteria**:
+  - All unit and integration tests pass; E2E passes on critical paths (auth, property flow, booking, payment, chat, admin)
+  - Error boundaries prevent app crashes from component errors
+  - Graceful degradation handles service failures appropriately
+  - Offline fallback or caching strategies implemented
+  - Consistent API error responses with correlation IDs
+  - Proper HTTP status codes (4xx for client errors, 5xx for server errors)
+  - Rate limiting headers present where implemented
+- **Definition of Done**:
+  - Error boundaries implemented in React component tree
+  - Custom error pages (404, 500) with branding and navigation
+  - Maintenance mode implementation with banner
+  - Graceful degradation patterns for non-essential features
+  - Offline fallback or caching strategies for data fetching
+  - Standardized API error response format
+  - Correlation IDs for request tracking
+  - Proper HTTP status code usage
+  - Rate limiting headers (Retry-After, X-RateLimit-Remaining)
+  - Unit tests for error handling
+  - Integration tests for error scenarios
+  - E2E tests for error recovery paths
+
+### Feature 8.5: Internationalization Foundation
+- **Feature ID**: F805
+- **Description**: Implement foundation for internationalization (i18n) to support multiple languages in future releases.
+- **Business Value**: Prepares the platform for global expansion and improves accessibility for non-English speaking users.
+- **User Roles**: All users (future benefit)
+- **UI Screens**: All screens (foundation work)
+- **APIs**: None (i18n framework setup)
+- **Database Tables**: May add language-specific content tables or extensions
+- **Validation Rules**:
+  - i18n framework properly installed and configured
+  - Translation keys follow consistent naming convention
+  - Fallback language implementation (English)
+  - Right-to-left (RTL) layout prepared
+  - Date, number, currency formatting localization ready
+- **Dependencies**:
+  - All user-facing text in Epics 1-7
+- **Acceptance Criteria**:
+  - Internationalization framework installed and configured
+  - Base language (English) translations complete
+  - Language switching foundation implemented
+  - Text extraction setup for translation workflow
+  - RTL layout considerations in CSS framework
+- **Definition of Done**:
+  - i18n framework (react-i18next or similar) installed
+  - Translation files created for English (base language)
+  - Translation key convention established and followed
+  - Language context and hook implementation
+  - Date/number/currency formatting localization ready
+  - RTL CSS considerations implemented
+  - Unit tests for i18n components
+  - Integration tests for language switching
+  - Foundation ready for adding additional languages
+
+### Feature 8.6: Security Hardening & Audit
+- **Feature ID**: F806
+- **Description**: Implement security auditing, dependency updates, penetration testing basics, and OWASP checklist compliance.
+- **Business Value**: Protects the platform and user data from security threats, maintaining trust and reducing breach risk.
+- **User Roles**: All users (indirect through data protection)
+- **UI Screens**: None (security enhancements)
+- **APIs**: All endpoints (security enhancements)
+- **Database Tables**: May add security-related tables (audit logs, etc.)
+- **Validation Rules**:
+  - No critical security vulnerabilities in dependencies (npm audit)
+  - Dependency updates applied for security patches
+  - Basic penetration testing completed (authentication, input validation)
+  - OWASP Top 10 vulnerabilities addressed
+  - Security headers properly configured
+  - Input validation and output encoding implemented
+  - Authentication and authorization properly implemented
+  - Session management secure
+  - Data protection measures in place (encryption at rest/in transit)
+- **Dependencies**:
+  - Feature 0.3 (Security & Middleware Infrastructure)
+  - All authentication and authorization features
+  - All data handling features
+- **Acceptance Criteria**:
+  - No critical security vulnerabilities in dependencies (npm audit)
+  - All unit and integration tests pass; E2E passes on critical paths
+  - Security scan passes for common vulnerabilities
+  - Authentication and authorization tested and working
+  - Input validation and output encoding implemented
+  - Security headers properly configured
+  - Session management secure
+  - Data protection measures validated
+- **Definition of Done**:
+  - Dependency security audit completed and issues fixed
+  - Security scanning implemented (npm audit, Snyk, etc.)
+  - Basic penetration testing completed
+  - OWASP Top 10 vulnerabilities addressed in implementation
+  - Security headers configured and validated
+  - Input validation and output encoding implemented
+  - Authentication sessions secure
+  - Data encryption at rest and in transit implemented
+  - Security logging and monitoring implemented
+  - Unit tests for security components
+  - Integration tests for security scenarios
+
+### Feature 8.7: Documentation Completion
+- **Feature ID**: F807
+- **Description**: Finalize all documentation, onboard new developers, and ensure documentation accuracy.
+- **Business Value**: Ensures knowledge transfer, reduces onboarding time, and maintains development efficiency.
+- **User Roles**: Developers, DevOps, Product, Support
+- **UI Screens**: None (documentation)
+- **APIs**: None (though API documentation is part of this)
+- **Database Tables**: None
+- **Validation Rules**:
+  - All knowledge_base files updated and accurate
+  - API specification matches implementation exactly
+  - Database schema changes documented properly
+  - UI changes reflected in screen specifications
+  - Business rule changes documented
+  - Documentation follows established style and format
+  - Examples and code samples match current implementation
+  - All internal links are valid and functional
+- **Dependencies**:
+  - All implemented features from Epics 0-7
+- **Acceptance Criteria**:
+  - All affected documentation updated in same PR as code changes
+  - Documentation accurately reflects implemented state
+  - API spec changes match implementation exactly
+  - Database schema changes documented properly
+  - UI changes reflected in screen specifications
+  - Business rule changes documented
+  - Documentation follows established style and format
+  - Examples and code samples match current implementation
+  - All internal links are valid and functional
+- **Definition of Done**:
+  - All knowledge_base files reviewed and updated for accuracy
+  - API specification synchronized with implementation
+  - Database design documentation updated
+  - Screen-to-database mapping documentation updated
+  - UI reference documentation updated
+  - Frontend functional specification updated
+  - User flows documentation updated
+  - Component library documentation updated
+  - Business rules documentation updated
+  - Process documentation updated (Git workflow, test plan, etc.)
+  - Internal links validated and fixed
+  - Documentation style guide followed
+  - Code samples and examples updated to match implementation
+  - Technical writer or peer review completed
+
+### Feature 8.8: Release Preparation & Deployment
+- **Feature ID**: F808
+- **Description**: Create release candidate, configure deployment pipeline, and prepare for production launch.
+- **Business Value**: Enables reliable and repeatable deployments to production environments, ensuring business continuity.
+- **User Roles**: DevOps, Operations, Release Management
+- **UI Screens**:
+  - Maintenance mode banner
+  - Cookie consent placeholder (for GDPR/CCPA)
+- **APIs**:
+  - Add API versioning in URL (`/api/v1/...`)
+- **Database Tables**: May add migration tracking or version tables
+- **Validation Rules**:
+  - Deployment pipeline configured for automated testing, building, and deployment
+  - Release notes generated from commit history
+  - Monitoring and alerting configured (uptime, error rates, response times)
+  - Backup and disaster recovery plan outlined
+  - Release checklist and sign‑off sheet completed
+  - Production environment prepared and validated
+- **Dependencies**:
+  - All features from Epics 0-7 must be complete and tested
+- **Acceptance Criteria**:
+  - Release candidate build and staging deployment completed
+  - Monitoring and alerting configured (uptime, error rates, response times)
+  - Backup and disaster recovery plan (outlined)
+  - Deployment pipeline produces Docker image (if applicable) and deploys to staging
+  - All test suites passing (unit >90%, integration >80%, E2E critical paths)
+  - Release notes generated from commit history (conventional changelog)
+- **Definition of Done**:
+  - Release branch created from main with version tag
+  - Deployment pipeline configured and tested
+  - Monitoring and alerting system implemented
+  - Backup and disaster recovery plan documented
+  - Release checklist completed and signed off
+  - Production environment validated
+  - Rollback procedure tested and documented
+  - Post-deployment verification procedures established
+  - Unit tests for deployment scripts
+  - integration tests for deployment process
+  - E2E tests in staging environment
+  - Performance benchmarks met in staging
+  - Security scan clean in staging
+  - Stakeholder sign-off obtained for production release
+
+---
+*Document maintained by the Project Team. Last updated: 2026-07-24.*
+*Questions or suggestions for improvement should be submitted as issues to the project repository.*
